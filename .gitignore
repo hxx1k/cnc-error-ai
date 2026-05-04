@@ -1,0 +1,12 @@
+*.npy
+*.faiss
+*.parquet
+*.pdf
+*.bin
+*.pt
+*.model
+*.zip
+
+__pycache__/
+*.pyc
+.env
