@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>CNC 錯誤碼查詢</title>
+
+<style>
+body {
+  font-family: Arial, "Microsoft JhengHei";
+  background: #0f172a;
+  color: #e2e8f0;
+  padding: 40px;
+}
+
+h2 {
+  margin-bottom: 20px;
+}
+
+input {
+  width: 320px;
+  padding: 12px;
+  border-radius: 6px;
+  border: none;
+  outline: none;
+  margin-right: 10px;
+}
+
+button {
+  padding: 12px 18px;
+  border: none;
+  border-radius: 6px;
+  background: #3b82f6;
+  color: white;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #2563eb;
+}
+
+.result {
+  margin-top: 30px;
+}
+
+.card {
+  background: #1e293b;
+  padding: 16px;
+  margin-bottom: 12px;
+  border-radius: 10px;
+}
+
+.ai {
+  background: #065f46;
+}
+
+.loading {
+  color: #facc15;
+}
+</style>
+</head>
+
+<body>
+
+<h2>🔧 CNC 錯誤碼查詢系統</h2>
+
+<input id="query" placeholder="輸入錯誤碼或問題">
+<button onclick="search()">查詢</button>
+
+<div id="status"></div>
+<div class="result" id="result"></div>
+
+<script>
+async function search() {
+
+  const q = document.getElementById("query").value;
+  const resultDiv = document.getElementById("result");
+  const statusDiv = document.getElementById("status");
+
+  if (!q) {
+    alert("請輸入內容");
+    return;
+  }
+
+  resultDiv.innerHTML = "";
+  statusDiv.innerHTML = "<p class='loading'>查詢中...</p>";
+
+  try {
+    const res = await fetch("https://ripping-huff-florist.ngrok-free.dev", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        query: q,
+        use_ollama: true
+      })
+    });
+
+    const data = await res.json();
+
+    console.log("API回傳:", data);
+
+    statusDiv.innerHTML = `找到 ${data.count} 筆資料`;
+
+    let html = "";
+
+    // 🤖 AI答案
+    if (data.answer) {
+      html += `
+      <div class="card ai">
+        <b>🤖 AI整理答案：</b><br><br>
+        ${data.answer}
+      </div>`;
+    }
+
+    // 📄 原始結果
+    data.results.forEach(r => {
+      html += `
+      <div class="card">
+        <b>錯誤代碼：</b>${r.error_code || "未提供"}<br><br>
+        <b>錯誤說明：</b>${r.error_message || "未提供"}<br><br>
+        <b>原因：</b>${r.cause_of_error || "未提供"}<br><br>
+        <b>處理方式：</b>${r.error_correction || "未提供"}<br>
+      </div>`;
+    });
+
+    resultDiv.innerHTML = html;
+
+  } catch (err) {
+    console.error(err);
+    statusDiv.innerHTML = "<span style='color:red'>連線失敗，請檢查後端或 ngrok</span>";
+  }
+}
+</script>
+
+</body>
+</html>
