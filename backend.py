@@ -23,8 +23,8 @@ app.add_middleware(
 # =========================
 # Qdrant
 # =========================
-QDRANT_URL = os.getenv("QDRANT_URL")
-QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
+QDRANT_URL = os.getenv("https://968e4e7c-26a5-4827-8f78-8b99c79a844a.sa-east-1-0.aws.cloud.qdrant.io:6333")
+QDRANT_API_KEY = os.getenv("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIiwic3ViamVjdCI6ImFwaS1rZXk6N2E2MDQ1NDAtMDk3Ni00NGQ3LWIzNDctZDdkN2QxMmRhZmQ3In0.YsAxOEgRl0ScyJPbWyfL5cRdx6zbVUWuuppVGIt4kPo")
 
 if not QDRANT_URL:
     raise ValueError("❌ QDRANT_URL 沒設定")
