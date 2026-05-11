@@ -39,7 +39,7 @@ COLLECTION_NAME = "error_codes"
 # =========================
 # Gemini
 # =========================
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+GEMINI_API_KEY = os.getenv("AIzaSyBJlFdOl0J8hg23HWjZrKbuTVEl8nYq2uU")
 
 gemini_client = None
 

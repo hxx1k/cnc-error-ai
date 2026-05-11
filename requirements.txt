@@ -3,3 +3,4 @@ uvicorn
 qdrant-client
 requests
 pydantic
+google-genai
