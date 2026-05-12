@@ -85,15 +85,13 @@ async function search() {
   statusDiv.innerHTML = "<p class='loading'>查詢中...</p>";
 
   try {
-    const res = await fetch("https://ripping-huff-florist.ngrok-free.dev", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        query: q,
-        use_ollama: true
-      })
+    const res = await fetch("https://cnc-error-ai.onrender.com/search", {
+  method: "POST",
+  headers: {"Content-Type": "application/json"},
+  body: JSON.stringify({
+    query: q,
+    use_ollama: false
+    })
     });
 
     const data = await res.json();

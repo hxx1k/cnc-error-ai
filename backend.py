@@ -3,13 +3,16 @@ import re
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+
 from qdrant_client import QdrantClient
 from qdrant_client.models import Filter, FieldCondition, MatchValue
-from google import genai
 
-# =========================
-# FastAPI
-# =========================
+try:
+    from google import genai
+except Exception:
+    genai = None
+
+
 app = FastAPI()
 
 app.add_middleware(
@@ -20,48 +23,57 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# =========================
-# Qdrant
-# =========================
-QDRANT_URL = os.getenv("https://968e4e7c-26a5-4827-8f78-8b99c79a844a.sa-east-1-0.aws.cloud.qdrant.io:6333")
-QDRANT_API_KEY = os.getenv("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIiwic3ViamVjdCI6ImFwaS1rZXk6N2E2MDQ1NDAtMDk3Ni00NGQ3LWIzNDctZDdkN2QxMmRhZmQ3In0.YsAxOEgRl0ScyJPbWyfL5cRdx6zbVUWuuppVGIt4kPo")
-
-if not QDRANT_URL:
-    raise ValueError("❌ QDRANT_URL 沒設定")
-
-qdrant = QdrantClient(
-    url=QDRANT_URL,
-    api_key=QDRANT_API_KEY
-)
-
 COLLECTION_NAME = "error_codes"
-
-# =========================
-# Gemini
-# =========================
-GEMINI_API_KEY = os.getenv("AIzaSyBJlFdOl0J8hg23HWjZrKbuTVEl8nYq2uU")
-
-gemini_client = None
-
-if GEMINI_API_KEY:
-    gemini_client = genai.Client(api_key=GEMINI_API_KEY)
-
-# =========================
-# Regex
-# =========================
 ERR_RE = re.compile(r"[A-Za-z0-9]{3}-[A-Za-z0-9]{4,5}")
 
-# =========================
-# Request Model
-# =========================
+QDRANT_URL = os.getenv("QDRANT_URL")
+QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
+print("QDRANT_URL =", QDRANT_URL)
+print("QDRANT_API_KEY exists =", bool(QDRANT_API_KEY))
+print("GEMINI_API_KEY exists =", bool(GEMINI_API_KEY))
+
+qdrant = None
+gemini_client = None
+
+if QDRANT_URL and QDRANT_API_KEY:
+    try:
+        qdrant = QdrantClient(
+            url=QDRANT_URL,
+            api_key=QDRANT_API_KEY,
+        )
+        print("Qdrant client created")
+    except Exception as e:
+        print("Qdrant client error:", e)
+
+if GEMINI_API_KEY and genai:
+    try:
+        gemini_client = genai.Client(api_key=GEMINI_API_KEY)
+        print("Gemini client created")
+    except Exception as e:
+        print("Gemini client error:", e)
+
+
 class QueryRequest(BaseModel):
     query: str
     use_ollama: bool = False
 
-# =========================
-# Exact Search
-# =========================
+
+@app.get("/")
+def home():
+    return {
+        "status": "ok",
+        "message": "CNC Error AI API is running",
+        "qdrant_ready": qdrant is not None,
+        "gemini_ready": gemini_client is not None,
+    }
+
+
 def exact_search(code: str, limit: int = 100):
+    if qdrant is None:
+        return []
+
     res, _ = qdrant.scroll(
         collection_name=COLLECTION_NAME,
         scroll_filter=Filter(
@@ -78,16 +90,16 @@ def exact_search(code: str, limit: int = 100):
 
     return [p.payload for p in res]
 
-# =========================
-# Keyword Search
-# =========================
+
 def keyword_search(query: str, max_pages: int = 10, page_limit: int = 1000):
+    if qdrant is None:
+        return []
+
     results = []
     offset = None
     q = query.lower().strip()
 
     for _ in range(max_pages):
-
         points, offset = qdrant.scroll(
             collection_name=COLLECTION_NAME,
             limit=page_limit,
@@ -96,7 +108,6 @@ def keyword_search(query: str, max_pages: int = 10, page_limit: int = 1000):
         )
 
         for p in points:
-
             payload = p.payload or {}
 
             text = (
@@ -115,16 +126,12 @@ def keyword_search(query: str, max_pages: int = 10, page_limit: int = 1000):
 
     return results[:20]
 
-# =========================
-# Remove Duplicates
-# =========================
-def remove_duplicates(results):
 
+def remove_duplicates(results):
     seen = set()
     unique = []
 
     for r in results:
-
         key = (
             str(r.get("error_code", "")) +
             str(r.get("error_message", "")) +
@@ -138,13 +145,10 @@ def remove_duplicates(results):
 
     return unique
 
-# =========================
-# Gemini Generate
-# =========================
-def ask_gemini(query: str, results: list):
 
-    if not gemini_client:
-        return "❌ Gemini API Key 未設定"
+def ask_gemini(query: str, results: list):
+    if gemini_client is None:
+        return "Gemini 未啟用：請確認 GEMINI_API_KEY 是否已設定。"
 
     context = "\n\n---\n\n".join([
         f"""
@@ -160,7 +164,7 @@ def ask_gemini(query: str, results: list):
     prompt = f"""
 你是 CNC 錯誤代碼售後服務 AI 助理。
 
-只能根據提供資料回答。
+只能根據下方資料回答。
 禁止亂猜。
 禁止編造不存在資訊。
 
@@ -181,62 +185,42 @@ def ask_gemini(query: str, results: list):
 
     response = gemini_client.models.generate_content(
         model="gemini-2.5-flash",
-        contents=prompt
+        contents=prompt,
     )
 
     return response.text
 
-# =========================
-# Home
-# =========================
-@app.get("/")
-def home():
-    return {
-        "status": "ok",
-        "message": "CNC Error AI API is running"
-    }
 
-# =========================
-# Search API
-# =========================
 @app.post("/search")
 def search(req: QueryRequest):
-
     q = req.query.strip()
+
+    if qdrant is None:
+        return {
+            "query": q,
+            "count": 0,
+            "answer": "Qdrant 未連線，請檢查 Render 的 QDRANT_URL 與 QDRANT_API_KEY。",
+            "results": [],
+        }
 
     m = ERR_RE.search(q)
 
-    # -------------------------
-    # Exact Search
-    # -------------------------
     if m:
-
         code = m.group(0)
-
         results = exact_search(code)
-
         results = [
             r for r in results
             if r.get("error_code") == code
         ]
-
-    # -------------------------
-    # Keyword Search
-    # -------------------------
     else:
         results = keyword_search(q)
 
     results = remove_duplicates(results)
 
-    # -------------------------
-    # Default Answer
-    # -------------------------
     answer = ""
 
     if results:
-
         first = results[0]
-
         answer = (
             f"錯誤代碼：{first.get('error_code', '未提供')}\n"
             f"錯誤說明：{first.get('error_message', '未提供')}\n"
@@ -245,14 +229,9 @@ def search(req: QueryRequest):
             f"來源頁碼：{first.get('page', '未提供')}"
         )
 
-    # -------------------------
-    # Gemini Generate
-    # -------------------------
     if results and req.use_ollama:
-
         try:
             answer = ask_gemini(q, results)
-
         except Exception as e:
             answer = f"Gemini 生成失敗：{e}"
 
