@@ -165,11 +165,17 @@ async function sendMessage(){
     input.value="";
 
     const loading=addMessage(
-        "查詢中...",
+        "🔍 AI 搜尋中...",
         "bot"
     );
 
     try{
+
+        const controller=new AbortController();
+
+        const timeout=setTimeout(()=>{
+            controller.abort();
+        },30000);
 
         const res=await fetch(API_URL,{
 
@@ -181,15 +187,37 @@ async function sendMessage(){
 
             body:JSON.stringify({
                 query:q
-            })
+            }),
+
+            signal:controller.signal
         });
 
+        clearTimeout(timeout);
+
+        if(!res.ok){
+
+            loading.innerHTML=
+            `API錯誤：${res.status}`;
+
+            return;
+        }
+
         const data=await res.json();
+
+        console.log(data);
+
+        if(data.error){
+
+            loading.innerHTML=
+            `系統錯誤：<br>${data.error}`;
+
+            return;
+        }
 
         if(data.count===0){
 
             loading.innerHTML=
-            "查無資料";
+            "查無相關資料";
 
             return;
         }
@@ -197,16 +225,22 @@ async function sendMessage(){
         let html="";
 
         html+=`
-        <div>
+        <div style="margin-bottom:20px;">
         ${data.answer}
         </div>
         `;
 
-        // =====================
-        // 顯示圖片
-        // =====================
+        if(data.images && data.images.length>0){
 
-        if(data.images){
+            html+=`
+            <div style="
+                margin-top:20px;
+                font-size:18px;
+                font-weight:bold;
+            ">
+            相關圖片：
+            </div>
+            `;
 
             for(const img of data.images){
 
@@ -214,6 +248,7 @@ async function sendMessage(){
                 <img
                     src="https://cnc-error-ai.onrender.com${img}"
                     class="result-image"
+                    loading="lazy"
                 >
                 `;
             }
@@ -223,10 +258,18 @@ async function sendMessage(){
 
     }catch(err){
 
-        loading.innerHTML=
-        "API連線失敗";
-
         console.error(err);
+
+        if(err.name==="AbortError"){
+
+            loading.innerHTML=
+            "請求超時（Render 免費版可能正在喚醒）";
+
+        }else{
+
+            loading.innerHTML=
+            "API連線失敗";
+        }
     }
 }
 
