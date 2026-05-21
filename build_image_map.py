@@ -3,15 +3,12 @@ import json
 import re
 
 IMAGE_DIR = "static/images"
+OUTPUT = "image_map.json"
 
 image_map = {}
 
-files = os.listdir(IMAGE_DIR)
-
-for file in files:
-
-    # 抓 page
-    match = re.search(r"_p(\d+)_", file)
+for file in os.listdir(IMAGE_DIR):
+    match = re.search(r"_p(\d+)", file)
 
     if not match:
         continue
@@ -23,12 +20,7 @@ for file in files:
 
     image_map[page].append(file)
 
-with open("image_map.json", "w", encoding="utf-8") as f:
-    json.dump(
-        image_map,
-        f,
-        ensure_ascii=False,
-        indent=2
-    )
+with open(OUTPUT, "w", encoding="utf-8") as f:
+    json.dump(image_map, f, ensure_ascii=False, indent=2)
 
 print("完成：image_map.json")

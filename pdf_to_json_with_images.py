@@ -1,169 +1,104 @@
 import fitz
 import os
-import io
-from PIL import Image
+import json
+import re
 
 PDFS = [
-    "L2100 車床程式說明手冊.pdf",
-    "L2100車床中文維護手冊(全).pdf",
-    "L2100車床參數警報手冊.pdf"
+    {
+        "path": "L2100 車床程式說明手冊.pdf",
+        "manual_type": "programming"
+    },
+    {
+        "path": "L2100車床中文維護手冊(全).pdf",
+        "manual_type": "maintenance"
+    },
+    {
+        "path": "L2100車床參數警報手冊.pdf",
+        "manual_type": "parameter_alarm"
+    }
 ]
 
-OUTPUT_DIR = "static/images"
+IMAGE_MAP_PATH = "image_map.json"
+OUTPUT_JSON = "data/l2100_manuals.json"
 
-os.makedirs(OUTPUT_DIR, exist_ok=True)
+os.makedirs("data", exist_ok=True)
 
-print("\n=== 開始抽取 PDF 圖片 ===\n")
+if os.path.exists(IMAGE_MAP_PATH):
+    with open(IMAGE_MAP_PATH, "r", encoding="utf-8") as f:
+        IMAGE_MAP = json.load(f)
+else:
+    IMAGE_MAP = {}
 
-for pdf_path in PDFS:
+def detect_codes(text):
+    patterns = [
+        r"\bG\d{2,3}(?:\.\d)?\b",
+        r"\bM\d{2,3}\b",
+        r"\bINT\s*\d+\b",
+        r"\bMOT\s*\d+\b",
+        r"\bOP\s*\d+\b",
+        r"\bRTEX\s*\d+\b",
+        r"\bEtherCAT\b",
+        r"\b\d{4}\b"
+    ]
 
-    pdf_name = os.path.splitext(os.path.basename(pdf_path))[0]
+    codes = []
+    for p in patterns:
+        codes.extend(re.findall(p, text, flags=re.IGNORECASE))
 
-    print(f"\n==============================")
-    print(f"處理 PDF：{pdf_name}")
-    print(f"==============================")
+    return list(dict.fromkeys(codes))
 
-    try:
-        doc = fitz.open(pdf_path)
+def get_images_for_page(page):
+    page_key = str(page)
+    images = []
 
-    except Exception as e:
-        print(f"開啟失敗：{e}")
+    if page_key in IMAGE_MAP:
+        for filename in IMAGE_MAP[page_key]:
+            images.append(f"/static/images/{filename}")
+
+    return images
+
+records = []
+record_id = 1
+
+for pdf in PDFS:
+    pdf_path = pdf["path"]
+    manual_type = pdf["manual_type"]
+
+    if not os.path.exists(pdf_path):
+        print("找不到：", pdf_path)
         continue
 
-    saved_count = 0
+    doc = fitz.open(pdf_path)
+    source_file = os.path.basename(pdf_path)
 
     for page_index in range(len(doc)):
+        page_no = page_index + 1
+        text = doc[page_index].get_text("text").strip()
 
-        page = doc[page_index]
-
-        image_list = page.get_images(full=True)
-
-        if not image_list:
+        if not text:
             continue
 
-        print(f"\n第 {page_index + 1} 頁找到 {len(image_list)} 張圖片")
+        text = re.sub(r"\n{3,}", "\n\n", text)
+        text = re.sub(r"[ \t]+", " ", text)
 
-        for img_index, img in enumerate(image_list):
+        lines = [line.strip() for line in text.splitlines() if line.strip()]
+        title = lines[0][:80] if lines else ""
 
-            try:
+        records.append({
+            "id": record_id,
+            "source_file": source_file,
+            "manual_type": manual_type,
+            "page": page_no,
+            "title": title,
+            "codes": detect_codes(text),
+            "text": text,
+            "images": get_images_for_page(page_no)
+        })
 
-                xref = img[0]
+        record_id += 1
 
-                base_image = doc.extract_image(xref)
+with open(OUTPUT_JSON, "w", encoding="utf-8") as f:
+    json.dump(records, f, ensure_ascii=False, indent=2)
 
-                image_bytes = base_image["image"]
-
-                image_ext = base_image["ext"]
-
-                pil_img = Image.open(io.BytesIO(image_bytes))
-
-                width, height = pil_img.size
-
-                # ====================================
-                # 過濾 1：太小圖片
-                # ====================================
-                if width < 120 or height < 120:
-                    print(f"跳過小圖片：{width}x{height}")
-                    continue
-
-                # ====================================
-                # 過濾 2：比例異常
-                # ====================================
-                ratio = width / height
-
-                if ratio < 0.3 or ratio > 5:
-                    print(f"跳過比例異常：{ratio:.2f}")
-                    continue
-
-                # ====================================
-                # 過濾 3：檔案太小
-                # ====================================
-                if len(image_bytes) < 5000:
-                    print("跳過超小檔案")
-                    continue
-
-                # ====================================
-                # 灰階分析
-                # ====================================
-                gray = pil_img.convert("L")
-
-                pixels = list(gray.getdata())
-
-                avg = sum(pixels) / len(pixels)
-
-                # 幾乎全黑
-                if avg < 15:
-                    print("跳過純黑圖片")
-                    continue
-
-                # ====================================
-                # 白底比例分析（工程圖判斷）
-                # ====================================
-                white_pixels = sum(
-                    1 for p in pixels if p > 240
-                )
-
-                white_ratio = white_pixels / len(pixels)
-
-                if white_ratio < 0.35:
-                    print(
-                        f"跳過非工程圖：白底比例 {white_ratio:.2f}"
-                    )
-                    continue
-
-                # ====================================
-                # 彩色比例分析（過濾 logo/icon）
-                # ====================================
-                rgb = pil_img.convert("RGB")
-
-                rgb_pixels = list(rgb.getdata())
-
-                colorful = 0
-
-                for r, g, b in rgb_pixels:
-
-                    if (
-                        abs(r - g) > 20
-                        or abs(r - b) > 20
-                        or abs(g - b) > 20
-                    ):
-                        colorful += 1
-
-                color_ratio = colorful / len(rgb_pixels)
-
-                if color_ratio > 0.25:
-                    print(
-                        f"跳過高彩色圖片：{color_ratio:.2f}"
-                    )
-                    continue
-
-                # ====================================
-                # 儲存圖片
-                # ====================================
-                image_name = (
-                    f"{pdf_name}_p{page_index+1}_{img_index+1}.{image_ext}"
-                )
-
-                image_path = os.path.join(
-                    OUTPUT_DIR,
-                    image_name
-                )
-
-                with open(image_path, "wb") as f:
-                    f.write(image_bytes)
-
-                saved_count += 1
-
-                print(
-                    f"保留圖片：{image_name} "
-                    f"({width}x{height})"
-                )
-
-            except Exception as e:
-                print(f"圖片處理失敗：{e}")
-
-    print(
-        f"\n{pdf_name} 完成，共保留 {saved_count} 張圖片"
-    )
-
-print("\n=== 全部完成 ===")
+print(f"完成：{OUTPUT_JSON}")
+print(f"共 {len(records)} 筆")
