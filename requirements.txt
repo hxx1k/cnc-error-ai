@@ -4,5 +4,3 @@ qdrant-client
 requests
 pydantic
 google-genai
-sentence-transformers
-torch

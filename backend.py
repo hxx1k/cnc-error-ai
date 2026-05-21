@@ -1,5 +1,4 @@
 import os
-import json
 from typing import List
 
 from fastapi import FastAPI
@@ -8,9 +7,6 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from qdrant_client import QdrantClient
-from qdrant_client.models import SearchParams
-
-from sentence_transformers import SentenceTransformer
 from google import genai
 
 
@@ -33,7 +29,6 @@ QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 COLLECTION_NAME = "l2100_manuals"
-EMBED_MODEL = "BAAI/bge-m3"
 
 qdrant = QdrantClient(
     url=QDRANT_URL,
@@ -42,8 +37,6 @@ qdrant = QdrantClient(
     https=True,
     check_compatibility=False
 )
-
-embedder = SentenceTransformer(EMBED_MODEL)
 
 gemini_client = None
 if GEMINI_API_KEY:
@@ -75,7 +68,7 @@ def build_context(results: List[dict]) -> str:
 標題：{r.get("title", "")}
 代碼：{"、".join(r.get("codes", []))}
 內容：
-{r.get("text", "")}
+{r.get("text", "")[:2500]}
 """
 
     return context
@@ -115,43 +108,78 @@ def generate_answer(query: str, results: List[dict]) -> str:
     return response.text
 
 
+def keyword_search(query: str, limit: int = 5):
+    """
+    低記憶體版本：
+    不在 Render 載 embedding model。
+    直接用 Qdrant scroll 掃 payload text/codes/title。
+    """
+    results = []
+    offset = None
+    q = query.lower().strip()
+
+    for _ in range(20):
+        points, offset = qdrant.scroll(
+            collection_name=COLLECTION_NAME,
+            limit=100,
+            offset=offset,
+            with_payload=True,
+            with_vectors=False
+        )
+
+        for p in points:
+            payload = p.payload or {}
+
+            search_text = " ".join([
+                str(payload.get("source_file", "")),
+                str(payload.get("manual_type", "")),
+                str(payload.get("title", "")),
+                " ".join(payload.get("codes", [])),
+                str(payload.get("text", ""))
+            ]).lower()
+
+            if q in search_text:
+                results.append(payload)
+
+            if len(results) >= limit:
+                return results
+
+        if offset is None:
+            break
+
+    return results
+
+
 @app.post("/search")
 def search(req: QueryRequest):
     query = req.query.strip()
 
-    query_vector = embedder.encode(
-        query,
-        normalize_embeddings=True
-    ).tolist()
-
-    hits = qdrant.search(
-        collection_name=COLLECTION_NAME,
-        query_vector=query_vector,
-        limit=5,
-        with_payload=True,
-        search_params=SearchParams(hnsw_ef=128)
-    )
-
-    results = []
-    images = []
-
-    for hit in hits:
-        payload = hit.payload or {}
-
-        results.append(payload)
-
-        for img in payload.get("images", []):
-            if img not in images:
-                images.append(img)
+    try:
+        results = keyword_search(query, limit=5)
+    except Exception as e:
+        return {
+            "query": query,
+            "count": 0,
+            "answer": f"Qdrant 搜尋失敗：{e}",
+            "results": [],
+            "images": []
+        }
 
     if not results:
         return {
             "query": query,
             "count": 0,
-            "answer": "查無相關資料。",
+            "answer": "查無相關資料，請換一個關鍵字或輸入更完整的指令名稱。",
             "results": [],
             "images": []
         }
+
+    images = []
+
+    for payload in results:
+        for img in payload.get("images", []):
+            if img not in images:
+                images.append(img)
 
     answer = generate_answer(query, results)
 
