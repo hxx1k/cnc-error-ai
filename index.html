@@ -1,180 +1,236 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
 <meta charset="UTF-8">
-<title>CNC 錯誤碼 AI 助理</title>
+<title>CNC AI 助理</title>
+
 <style>
-body {
-  margin: 0;
-  font-family: "Microsoft JhengHei", Arial;
-  background: #0f172a;
-  color: #e5e7eb;
+
+body{
+    margin:0;
+    background:#0f172a;
+    color:white;
+    font-family:Arial;
 }
 
-.app {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
+.header{
+    padding:20px;
+    background:#111827;
+    font-size:24px;
+    font-weight:bold;
+    border-bottom:1px solid #334155;
 }
 
-.header {
-  padding: 16px 24px;
-  background: #111827;
-  border-bottom: 1px solid #334155;
-  font-size: 20px;
-  font-weight: bold;
+.chat{
+    height:calc(100vh - 140px);
+    overflow-y:auto;
+    padding:20px;
 }
 
-.chat {
-  flex: 1;
-  overflow-y: auto;
-  padding: 24px;
+.message{
+    max-width:900px;
+    margin:auto;
+    margin-bottom:20px;
+    padding:16px;
+    border-radius:14px;
+    line-height:1.7;
+    white-space:pre-wrap;
 }
 
-.message {
-  max-width: 850px;
-  margin: 0 auto 18px auto;
-  padding: 16px;
-  border-radius: 14px;
-  line-height: 1.7;
-  white-space: pre-wrap;
+.user{
+    background:#2563eb;
 }
 
-.user {
-  background: #2563eb;
-  color: white;
+.bot{
+    background:#1e293b;
+    border:1px solid #334155;
 }
 
-.bot {
-  background: #1e293b;
-  border: 1px solid #334155;
+.input-area{
+    display:flex;
+    gap:10px;
+    padding:20px;
+    background:#111827;
 }
 
-.input-area {
-  padding: 18px;
-  background: #111827;
-  border-top: 1px solid #334155;
-  display: flex;
-  gap: 10px;
+input{
+    flex:1;
+    padding:14px;
+    border:none;
+    border-radius:10px;
+    font-size:16px;
 }
 
-input {
-  flex: 1;
-  padding: 14px;
-  border-radius: 10px;
-  border: none;
-  outline: none;
-  font-size: 16px;
+button{
+    padding:14px 20px;
+    border:none;
+    border-radius:10px;
+    background:#22c55e;
+    color:white;
+    cursor:pointer;
+    font-size:16px;
 }
 
-button {
-  padding: 14px 22px;
-  border: none;
-  border-radius: 10px;
-  background: #22c55e;
-  color: white;
-  font-size: 16px;
-  cursor: pointer;
+button:hover{
+    background:#16a34a;
 }
 
-button:hover {
-  background: #16a34a;
+.result-image{
+    margin-top:15px;
+    max-width:100%;
+    border-radius:12px;
+    border:1px solid #475569;
 }
 
-.small {
-  color: #94a3b8;
-  font-size: 14px;
-  margin-top: 10px;
-}
 </style>
+
 </head>
 
 <body>
-<div class="app">
-  <div class="header">🔧 CNC 錯誤碼 AI 助理</div>
 
-  <div class="chat" id="chat">
-    <div class="message bot">
-你好，我是 CNC 錯誤碼 AI 助理。  
-你可以輸入錯誤碼，例如：231-E018  
-也可以輸入問題，例如：ProfiNet 初始化失敗
-    </div>
-  </div>
+<div class="header">
+🔧 CNC AI 助理
+</div>
 
-  <div class="input-area">
-    <input id="query" placeholder="輸入錯誤碼或問題..." onkeydown="handleKey(event)">
-    <button onclick="sendMessage()">送出</button>
-  </div>
+<div class="chat" id="chat">
+
+<div class="message bot">
+你好，我是 CNC AI 助理。<br>
+你可以直接輸入：
+
+231-E018
+
+或：
+
+G02 是什麼？
+</div>
+
+</div>
+
+<div class="input-area">
+
+<input
+    id="query"
+    placeholder="輸入錯誤代碼或問題..."
+    onkeydown="handleKey(event)"
+>
+
+<button onclick="sendMessage()">
+送出
+</button>
+
 </div>
 
 <script>
-const API_URL = "https://cnc-error-ai.onrender.com/search";
 
-function addMessage(text, type) {
-  const chat = document.getElementById("chat");
-  const div = document.createElement("div");
-  div.className = "message " + type;
-  div.innerText = text;
-  chat.appendChild(div);
-  chat.scrollTop = chat.scrollHeight;
-  return div;
+const API_URL =
+"https://cnc-error-ai.onrender.com/search";
+
+function addMessage(text,type){
+
+    const chat=document.getElementById("chat");
+
+    const div=document.createElement("div");
+
+    div.className="message "+type;
+
+    div.innerHTML=text;
+
+    chat.appendChild(div);
+
+    chat.scrollTop=chat.scrollHeight;
+
+    return div;
 }
 
-function handleKey(event) {
-  if (event.key === "Enter") {
-    sendMessage();
-  }
-}
+function handleKey(event){
 
-async function sendMessage() {
-  const input = document.getElementById("query");
-  const q = input.value.trim();
+    if(event.key==="Enter"){
 
-  if (!q) return;
-
-  addMessage(q, "user");
-  input.value = "";
-
-  const loading = addMessage("查詢中，請稍候...", "bot");
-
-  try {
-    const res = await fetch(API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        query: q,
-        use_ollama: true
-      })
-    });
-
-    const data = await res.json();
-
-    if (data.count === 0) {
-      loading.innerText = "查無相關資料，請確認錯誤碼或換其他關鍵字。";
-      return;
+        sendMessage();
     }
-
-    let text = data.answer || "已找到資料，但沒有產生 AI 回答。";
-
-    text += `\n\n---\n共找到 ${data.count} 筆資料`;
-
-    if (data.results && data.results.length > 0) {
-      text += "\n\n📌 來源資料：";
-      data.results.slice(0, 3).forEach((r, i) => {
-        text += `\n\n[${i + 1}] 錯誤代碼：${r.error_code || "未提供"}`;
-        text += `\n頁碼：${r.page || "未提供"}`;
-      });
-    }
-
-    loading.innerText = text;
-
-  } catch (err) {
-    loading.innerText = "連線失敗，請確認 Render API 是否正常啟動。";
-    console.error(err);
-  }
 }
+
+async function sendMessage(){
+
+    const input=document.getElementById("query");
+
+    const q=input.value.trim();
+
+    if(!q)return;
+
+    addMessage(q,"user");
+
+    input.value="";
+
+    const loading=addMessage(
+        "查詢中...",
+        "bot"
+    );
+
+    try{
+
+        const res=await fetch(API_URL,{
+
+            method:"POST",
+
+            headers:{
+                "Content-Type":"application/json"
+            },
+
+            body:JSON.stringify({
+                query:q
+            })
+        });
+
+        const data=await res.json();
+
+        if(data.count===0){
+
+            loading.innerHTML=
+            "查無資料";
+
+            return;
+        }
+
+        let html="";
+
+        html+=`
+        <div>
+        ${data.answer}
+        </div>
+        `;
+
+        // =====================
+        // 顯示圖片
+        // =====================
+
+        if(data.images){
+
+            for(const img of data.images){
+
+                html+=`
+                <img
+                    src="https://cnc-error-ai.onrender.com${img}"
+                    class="result-image"
+                >
+                `;
+            }
+        }
+
+        loading.innerHTML=html;
+
+    }catch(err){
+
+        loading.innerHTML=
+        "API連線失敗";
+
+        console.error(err);
+    }
+}
+
 </script>
+
 </body>
 </html>
