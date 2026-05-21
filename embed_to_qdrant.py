@@ -1,121 +1,145 @@
-import json
 import argparse
+import json
 import os
-import time
+
+from qdrant_client import QdrantClient
+from qdrant_client.models import Distance, VectorParams, PointStruct
 
 from sentence_transformers import SentenceTransformer
-from qdrant_client import QdrantClient
-from qdrant_client.models import (
-    Distance,
-    VectorParams,
-    PointStruct,
-    PayloadSchemaType,
-)
 
-
-def chunk_list(lst, batch_size):
-    for i in range(0, len(lst), batch_size):
-        yield lst[i:i + batch_size]
-
-
-def embed_texts(texts, model_name="BAAI/bge-m3", batch_size=25):
-    print(f"→ 載入 Embedding 模型：{model_name}")
-    model = SentenceTransformer(model_name)
-    emb = model.encode(
-        texts,
-        batch_size=batch_size,
-        show_progress_bar=True,
-        convert_to_numpy=True,
-        normalize_embeddings=True,
-    )
-    return emb.astype("float32")
-
-
-def write_to_qdrant_cloud(corpus, emb, url, api_key, collection, batch_size=300):
-    client = QdrantClient(url=url, api_key=api_key)
-
-    if client.collection_exists(collection):
-        print(f"→ 刪除舊 collection：{collection}")
-        client.delete_collection(collection)
-
-    print(f"→ 建立 collection：{collection}")
-    client.create_collection(
-        collection_name=collection,
-        vectors_config=VectorParams(
-            size=int(emb.shape[1]),
-            distance=Distance.COSINE,
-        ),
-    )
-
-    print("→ 建立 error_code payload index")
-    client.create_payload_index(
-        collection_name=collection,
-        field_name="error_code",
-        field_schema=PayloadSchemaType.KEYWORD,
-    )
-
-    time.sleep(2)
-
-    points = []
-    for i, row in enumerate(corpus):
-        points.append(
-            PointStruct(
-                id=int(row.get("id", i)),
-                vector=emb[i].tolist(),
-                payload={
-                    "text": row.get("text", ""),
-                    "page": row.get("page", 0),
-                    "error_code": str(row.get("error_code", "")).strip(),
-                    "error_message": row.get("error_message", ""),
-                    "cause_of_error": row.get("cause_of_error", ""),
-                    "error_correction": row.get("error_correction", ""),
-                },
-            )
-        )
-
-    total = len(points)
-    done = 0
-
-    print(f"→ 上傳資料，共 {total} 筆")
-    for batch in chunk_list(points, batch_size):
-        client.upsert(collection_name=collection, points=batch)
-        done += len(batch)
-        print(f"已寫入 {done}/{total}")
-
-    print("✅ 上傳完成（Qdrant Cloud）")
+EMBED_MODEL = "BAAI/bge-m3"
+COLLECTION_NAME = "l2100_manuals"
 
 
 def main():
+
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input", required=True)
-    parser.add_argument("--model", default="BAAI/bge-m3")
-    parser.add_argument("--qdrant-url", default=os.getenv("QDRANT_URL"))
-    parser.add_argument("--qdrant-api-key", default=os.getenv("QDRANT_API_KEY"))
-    parser.add_argument("--collection", default="error_codes")
-    parser.add_argument("--embed-batch-size", type=int, default=25)
-    parser.add_argument("--upload-batch-size", type=int, default=300)
+
+    parser.add_argument(
+        "--input",
+        default="data/l2100_manuals.json"
+    )
+
+    parser.add_argument(
+        "--collection",
+        default=COLLECTION_NAME
+    )
+
     args = parser.parse_args()
 
-    if not args.qdrant_url or not args.qdrant_api_key:
-        raise RuntimeError("請提供 Qdrant URL 與 API KEY，或先設定 QDRANT_URL / QDRANT_API_KEY")
+    qdrant_url = os.getenv("QDRANT_URL")
+    qdrant_api_key = os.getenv("QDRANT_API_KEY")
+
+    if not qdrant_url:
+        raise RuntimeError("缺少 QDRANT_URL")
+
+    if not qdrant_api_key:
+        raise RuntimeError("缺少 QDRANT_API_KEY")
+
+    print("載入 embedding 模型...")
+    model = SentenceTransformer(EMBED_MODEL)
+
+    print("連接 Qdrant...")
+
+    client = QdrantClient(
+        url=qdrant_url,
+        api_key=qdrant_api_key,
+        prefer_grpc=False,
+        https=True,
+        check_compatibility=False
+    )
+
+    print("測試 Qdrant 連線...")
+    print(client.get_collections())
 
     with open(args.input, "r", encoding="utf-8") as f:
-        corpus = json.load(f)
+        records = json.load(f)
 
-    corpus = [row for row in corpus if str(row.get("text", "")).strip()]
-    texts = [row["text"] for row in corpus]
+    vector_size = model.get_sentence_embedding_dimension()
 
-    print(f"→ 準備 Embedding，共 {len(texts)} 筆")
-    emb = embed_texts(texts, args.model, args.embed_batch_size)
+    print(f"Vector size: {vector_size}")
 
-    write_to_qdrant_cloud(
-        corpus=corpus,
-        emb=emb,
-        url=args.qdrant_url,
-        api_key=args.qdrant_api_key,
-        collection=args.collection,
-        batch_size=args.upload_batch_size,
+    try:
+        if client.collection_exists(args.collection):
+            print(f"刪除舊 collection：{args.collection}")
+            client.delete_collection(args.collection)
+    except Exception as e:
+        print("collection_exists 失敗：", e)
+
+    print(f"建立 collection：{args.collection}")
+
+    client.create_collection(
+        collection_name=args.collection,
+        vectors_config=VectorParams(
+            size=vector_size,
+            distance=Distance.COSINE
+        )
     )
+
+    points = []
+
+    print("開始 embedding...")
+
+    for r in records:
+
+        embedding_text = f"""
+來源檔案:
+{r.get("source_file", "")}
+
+手冊類型:
+{r.get("manual_type", "")}
+
+標題:
+{r.get("title", "")}
+
+代碼:
+{' '.join(r.get("codes", []))}
+
+內容:
+{r.get("text", "")}
+"""
+
+        vector = model.encode(
+            embedding_text,
+            normalize_embeddings=True
+        ).tolist()
+
+        payload = {
+            "id": r.get("id"),
+            "source_file": r.get("source_file"),
+            "manual_type": r.get("manual_type"),
+            "page": r.get("page"),
+            "title": r.get("title"),
+            "codes": r.get("codes", []),
+            "text": r.get("text"),
+            "images": r.get("images", [])
+        }
+
+        point = PointStruct(
+            id=int(r["id"]),
+            vector=vector,
+            payload=payload
+        )
+
+        points.append(point)
+
+    print(f"共 {len(points)} 筆")
+
+    batch_size = 32
+
+    for i in range(0, len(points), batch_size):
+
+        batch = points[i:i + batch_size]
+
+        client.upsert(
+            collection_name=args.collection,
+            points=batch
+        )
+
+        print(f"已上傳 {i + len(batch)}/{len(points)}")
+
+    print("\n=== 完成 ===")
+    print(f"Collection：{args.collection}")
 
 
 if __name__ == "__main__":

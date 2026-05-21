@@ -1,21 +1,18 @@
+import os
+import json
+from typing import List
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-
 from pydantic import BaseModel
 
 from qdrant_client import QdrantClient
-from qdrant_client.models import Filter, FieldCondition, MatchValue
+from qdrant_client.models import SearchParams
 
+from sentence_transformers import SentenceTransformer
 from google import genai
 
-import requests
-import os
-import json
-
-# =========================
-# FastAPI
-# =========================
 
 app = FastAPI()
 
@@ -27,203 +24,141 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# =========================
-# static folder
-# =========================
-
 if os.path.exists("static"):
+    app.mount("/static", StaticFiles(directory="static"), name="static")
 
-    app.mount(
-        "/static",
-        StaticFiles(directory="static"),
-        name="static"
-    )
-
-    print("static 資料夾已掛載")
-
-else:
-
-    print("找不到 static 資料夾")
-
-# =========================
-# image map
-# =========================
-
-IMAGE_MAP = {}
-
-if os.path.exists("image_map.json"):
-
-    try:
-
-        with open(
-            "image_map.json",
-            "r",
-            encoding="utf-8"
-        ) as f:
-
-            IMAGE_MAP = json.load(f)
-
-        print("image_map.json 載入成功")
-
-    except Exception as e:
-
-        print(f"image_map 載入失敗: {e}")
-
-else:
-
-    print("找不到 image_map.json")
-
-# =========================
-# Qdrant
-# =========================
 
 QDRANT_URL = os.getenv("QDRANT_URL")
 QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
-
-client = QdrantClient(
-    url=QDRANT_URL,
-    api_key=QDRANT_API_KEY,
-)
-
-COLLECTION_NAME = "l2100_manuals"
-
-# =========================
-# Gemini
-# =========================
-
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
-# =========================
-# request model
-# =========================
+COLLECTION_NAME = "l2100_manuals"
+EMBED_MODEL = "BAAI/bge-m3"
+
+qdrant = QdrantClient(
+    url=QDRANT_URL,
+    api_key=QDRANT_API_KEY,
+    prefer_grpc=False,
+    https=True,
+    check_compatibility=False
+)
+
+embedder = SentenceTransformer(EMBED_MODEL)
+
+gemini_client = None
+if GEMINI_API_KEY:
+    gemini_client = genai.Client(api_key=GEMINI_API_KEY)
+
 
 class QueryRequest(BaseModel):
-
     query: str
+    use_ollama: bool = True
 
-# =========================
-# home
-# =========================
 
 @app.get("/")
-
 def home():
-
     return {
         "status": "ok",
-        "message": "CNC Error AI API is running"
+        "message": "CNC L2100 Manual AI API is running",
+        "collection": COLLECTION_NAME
     }
 
-# =========================
-# search
-# =========================
+
+def build_context(results: List[dict]) -> str:
+    context = ""
+
+    for i, r in enumerate(results, 1):
+        context += f"""
+【資料 {i}】
+來源：{r.get("source_file", "")}
+頁碼：{r.get("page", "")}
+標題：{r.get("title", "")}
+代碼：{"、".join(r.get("codes", []))}
+內容：
+{r.get("text", "")}
+"""
+
+    return context
+
+
+def generate_answer(query: str, results: List[dict]) -> str:
+    context = build_context(results)
+
+    if not gemini_client:
+        return context[:3000]
+
+    prompt = f"""
+你是 CNC L2100 車床技術手冊 AI 助理。
+
+請只能根據下方資料回答，不要自己亂猜。
+如果資料不足，請明確說「目前資料中沒有找到足夠資訊」。
+
+使用者問題：
+{query}
+
+檢索到的手冊資料：
+{context}
+
+請用繁體中文回答，格式如下：
+
+1. 查詢重點：
+2. 說明：
+3. 操作/處理建議：
+4. 來源頁碼：
+"""
+
+    response = gemini_client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=prompt
+    )
+
+    return response.text
+
 
 @app.post("/search")
-
 def search(req: QueryRequest):
-
     query = req.query.strip()
 
-    try:
+    query_vector = embedder.encode(
+        query,
+        normalize_embeddings=True
+    ).tolist()
 
-        result = client.scroll(
-            collection_name=COLLECTION_NAME,
-            scroll_filter=Filter(
-                must=[
-                    FieldCondition(
-                        key="error_code",
-                        match=MatchValue(value=query)
-                    )
-                ]
-            ),
-            limit=5,
-            with_payload=True,
-            with_vectors=False
-        )
+    hits = qdrant.search(
+        collection_name=COLLECTION_NAME,
+        query_vector=query_vector,
+        limit=5,
+        with_payload=True,
+        search_params=SearchParams(hnsw_ef=128)
+    )
 
-        points = result[0]
+    results = []
+    images = []
 
-    except Exception as e:
+    for hit in hits:
+        payload = hit.payload or {}
 
-        return {
-            "error": str(e)
-        }
+        results.append(payload)
 
-    if not points:
+        for img in payload.get("images", []):
+            if img not in images:
+                images.append(img)
 
+    if not results:
         return {
             "query": query,
             "count": 0,
-            "answer": "找不到資料",
+            "answer": "查無相關資料。",
             "results": [],
             "images": []
         }
 
-    payload = points[0].payload
-
-    text = payload.get("text", "")
-
-    page = str(payload.get("page", ""))
-
-    # =========================
-    # Gemini answer
-    # =========================
-
-    answer = text
-
-    if GEMINI_API_KEY:
-
-        try:
-
-            client_gemini = genai.Client(
-                api_key=GEMINI_API_KEY
-            )
-
-            response = client_gemini.models.generate_content(
-                model="gemini-2.5-flash",
-                contents=f"""
-你是 CNC 錯誤代碼助手。
-
-請根據以下資料回答：
-
-{text}
-
-使用者問題：
-{query}
-"""
-            )
-
-            answer = response.text
-
-        except Exception as e:
-
-            answer = f"Gemini 生成失敗：{e}"
-
-    # =========================
-    # image urls
-    # =========================
-
-    image_urls = []
-
-    if page in IMAGE_MAP:
-
-        for filename in IMAGE_MAP[page]:
-
-            image_urls.append(
-                f"/static/images/{filename}"
-            )
+    answer = generate_answer(query, results)
 
     return {
-
         "query": query,
-
-        "count": len(points),
-
+        "count": len(results),
         "answer": answer,
-
-        "results": [
-            payload
-        ],
-
-        "images": image_urls
+        "results": results,
+        "images": images
     }
