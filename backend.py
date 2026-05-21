@@ -5,8 +5,11 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from qdrant_client import QdrantClient
-from qdrant_client.http.models import Filter, FieldCondition, MatchValue
+from qdrant_client.models import Filter, FieldCondition, MatchValue
 
+from google import genai
+
+import requests
 import os
 import json
 
@@ -25,14 +28,50 @@ app.add_middleware(
 )
 
 # =========================
-# static images
+# static folder
 # =========================
 
-app.mount(
-    "/static",
-    StaticFiles(directory="static"),
-    name="static"
-)
+if os.path.exists("static"):
+
+    app.mount(
+        "/static",
+        StaticFiles(directory="static"),
+        name="static"
+    )
+
+    print("static 資料夾已掛載")
+
+else:
+
+    print("找不到 static 資料夾")
+
+# =========================
+# image map
+# =========================
+
+IMAGE_MAP = {}
+
+if os.path.exists("image_map.json"):
+
+    try:
+
+        with open(
+            "image_map.json",
+            "r",
+            encoding="utf-8"
+        ) as f:
+
+            IMAGE_MAP = json.load(f)
+
+        print("image_map.json 載入成功")
+
+    except Exception as e:
+
+        print(f"image_map 載入失敗: {e}")
+
+else:
+
+    print("找不到 image_map.json")
 
 # =========================
 # Qdrant
@@ -41,33 +80,21 @@ app.mount(
 QDRANT_URL = os.getenv("QDRANT_URL")
 QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
 
-COLLECTION_NAME = "error_codes"
-
 client = QdrantClient(
     url=QDRANT_URL,
     api_key=QDRANT_API_KEY,
 )
 
-# =========================
-# image map
-# =========================
-
-try:
-
-    with open(
-        "image_map.json",
-        "r",
-        encoding="utf-8"
-    ) as f:
-
-        IMAGE_MAP = json.load(f)
-
-except:
-
-    IMAGE_MAP = {}
+COLLECTION_NAME = "error_codes"
 
 # =========================
-# Request Model
+# Gemini
+# =========================
+
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
+# =========================
+# request model
 # =========================
 
 class QueryRequest(BaseModel):
@@ -75,12 +102,12 @@ class QueryRequest(BaseModel):
     query: str
 
 # =========================
-# Root
+# home
 # =========================
 
 @app.get("/")
 
-def root():
+def home():
 
     return {
         "status": "ok",
@@ -88,7 +115,7 @@ def root():
     }
 
 # =========================
-# Search
+# search
 # =========================
 
 @app.post("/search")
@@ -97,63 +124,106 @@ def search(req: QueryRequest):
 
     query = req.query.strip()
 
-    # =====================
-    # error_code 精準搜尋
-    # =====================
+    try:
 
-    hits = client.scroll(
-        collection_name=COLLECTION_NAME,
+        result = client.scroll(
+            collection_name=COLLECTION_NAME,
+            scroll_filter=Filter(
+                must=[
+                    FieldCondition(
+                        key="error_code",
+                        match=MatchValue(value=query)
+                    )
+                ]
+            ),
+            limit=5,
+            with_payload=True,
+            with_vectors=False
+        )
 
-        scroll_filter=Filter(
-            must=[
-                FieldCondition(
-                    key="error_code",
-                    match=MatchValue(value=query)
-                )
-            ]
-        ),
+        points = result[0]
 
-        limit=5,
-        with_payload=True,
-        with_vectors=False
-    )[0]
+    except Exception as e:
 
-    results = []
+        return {
+            "error": str(e)
+        }
 
-    images = []
+    if not points:
 
-    for hit in hits:
+        return {
+            "query": query,
+            "count": 0,
+            "answer": "找不到資料",
+            "results": [],
+            "images": []
+        }
 
-        payload = hit.payload
+    payload = points[0].payload
 
-        page = str(payload.get("page", ""))
+    text = payload.get("text", "")
 
-        text = payload.get("text", "")
+    page = str(payload.get("page", ""))
 
-        results.append({
-            "page": page,
-            "text": text
-        })
+    # =========================
+    # Gemini answer
+    # =========================
 
-        # =====================
-        # 找圖片
-        # =====================
+    answer = text
 
-        if page in IMAGE_MAP:
+    if GEMINI_API_KEY:
 
-            for img_file in IMAGE_MAP[page]:
+        try:
 
-                images.append(
-                    f"/static/images/{img_file}"
-                )
+            client_gemini = genai.Client(
+                api_key=GEMINI_API_KEY
+            )
+
+            response = client_gemini.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=f"""
+你是 CNC 錯誤代碼助手。
+
+請根據以下資料回答：
+
+{text}
+
+使用者問題：
+{query}
+"""
+            )
+
+            answer = response.text
+
+        except Exception as e:
+
+            answer = f"Gemini 生成失敗：{e}"
+
+    # =========================
+    # image urls
+    # =========================
+
+    image_urls = []
+
+    if page in IMAGE_MAP:
+
+        for filename in IMAGE_MAP[page]:
+
+            image_urls.append(
+                f"/static/images/{filename}"
+            )
 
     return {
 
         "query": query,
 
-        "count": len(results),
+        "count": len(points),
 
-        "results": results,
+        "answer": answer,
 
-        "images": images
+        "results": [
+            payload
+        ],
+
+        "images": image_urls
     }
