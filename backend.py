@@ -39,6 +39,7 @@ qdrant = QdrantClient(
 )
 
 gemini_client = None
+
 if GEMINI_API_KEY:
     gemini_client = genai.Client(api_key=GEMINI_API_KEY)
 
@@ -109,16 +110,11 @@ def generate_answer(query: str, results: List[dict]) -> str:
 
 
 def keyword_search(query: str, limit: int = 5):
-    """
-    低記憶體版本：
-    不在 Render 載 embedding model。
-    直接用 Qdrant scroll 掃 payload text/codes/title。
-    """
     results = []
     offset = None
     q = query.lower().strip()
 
-    for _ in range(20):
+    for _ in range(50):
         points, offset = qdrant.scroll(
             collection_name=COLLECTION_NAME,
             limit=100,
@@ -156,6 +152,7 @@ def search(req: QueryRequest):
 
     try:
         results = keyword_search(query, limit=5)
+
     except Exception as e:
         return {
             "query": query,
