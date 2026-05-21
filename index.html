@@ -1,135 +1,180 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<title>CNC 錯誤碼查詢</title>
-
+<title>CNC 錯誤碼 AI 助理</title>
 <style>
 body {
-  font-family: Arial, "Microsoft JhengHei";
+  margin: 0;
+  font-family: "Microsoft JhengHei", Arial;
   background: #0f172a;
-  color: #e2e8f0;
-  padding: 40px;
+  color: #e5e7eb;
 }
 
-h2 {
-  margin-bottom: 20px;
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.header {
+  padding: 16px 24px;
+  background: #111827;
+  border-bottom: 1px solid #334155;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.chat {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+.message {
+  max-width: 850px;
+  margin: 0 auto 18px auto;
+  padding: 16px;
+  border-radius: 14px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+.user {
+  background: #2563eb;
+  color: white;
+}
+
+.bot {
+  background: #1e293b;
+  border: 1px solid #334155;
+}
+
+.input-area {
+  padding: 18px;
+  background: #111827;
+  border-top: 1px solid #334155;
+  display: flex;
+  gap: 10px;
 }
 
 input {
-  width: 320px;
-  padding: 12px;
-  border-radius: 6px;
+  flex: 1;
+  padding: 14px;
+  border-radius: 10px;
   border: none;
   outline: none;
-  margin-right: 10px;
+  font-size: 16px;
 }
 
 button {
-  padding: 12px 18px;
+  padding: 14px 22px;
   border: none;
-  border-radius: 6px;
-  background: #3b82f6;
+  border-radius: 10px;
+  background: #22c55e;
   color: white;
+  font-size: 16px;
   cursor: pointer;
 }
 
 button:hover {
-  background: #2563eb;
+  background: #16a34a;
 }
 
-.result {
-  margin-top: 30px;
-}
-
-.card {
-  background: #1e293b;
-  padding: 16px;
-  margin-bottom: 12px;
-  border-radius: 10px;
-}
-
-.ai {
-  background: #065f46;
-}
-
-.loading {
-  color: #facc15;
+.small {
+  color: #94a3b8;
+  font-size: 14px;
+  margin-top: 10px;
 }
 </style>
 </head>
 
 <body>
+<div class="app">
+  <div class="header">🔧 CNC 錯誤碼 AI 助理</div>
 
-<h2>🔧 CNC 錯誤碼查詢系統</h2>
+  <div class="chat" id="chat">
+    <div class="message bot">
+你好，我是 CNC 錯誤碼 AI 助理。  
+你可以輸入錯誤碼，例如：231-E018  
+也可以輸入問題，例如：ProfiNet 初始化失敗
+    </div>
+  </div>
 
-<input id="query" placeholder="輸入錯誤碼或問題">
-<button onclick="search()">查詢</button>
-
-<div id="status"></div>
-<div class="result" id="result"></div>
+  <div class="input-area">
+    <input id="query" placeholder="輸入錯誤碼或問題..." onkeydown="handleKey(event)">
+    <button onclick="sendMessage()">送出</button>
+  </div>
+</div>
 
 <script>
-async function search() {
+const API_URL = "https://cnc-error-ai.onrender.com/search";
 
-  const q = document.getElementById("query").value;
-  const resultDiv = document.getElementById("result");
-  const statusDiv = document.getElementById("status");
+function addMessage(text, type) {
+  const chat = document.getElementById("chat");
+  const div = document.createElement("div");
+  div.className = "message " + type;
+  div.innerText = text;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+  return div;
+}
 
-  if (!q) {
-    alert("請輸入內容");
-    return;
+function handleKey(event) {
+  if (event.key === "Enter") {
+    sendMessage();
   }
+}
 
-  resultDiv.innerHTML = "";
-  statusDiv.innerHTML = "<p class='loading'>查詢中...</p>";
+async function sendMessage() {
+  const input = document.getElementById("query");
+  const q = input.value.trim();
+
+  if (!q) return;
+
+  addMessage(q, "user");
+  input.value = "";
+
+  const loading = addMessage("查詢中，請稍候...", "bot");
 
   try {
-    const res = await fetch("https://cnc-error-ai.onrender.com/search", {
-  method: "POST",
-  headers: {"Content-Type": "application/json"},
-  body: JSON.stringify({
-    query: q,
-    use_ollama: false
-    })
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        query: q,
+        use_ollama: true
+      })
     });
 
     const data = await res.json();
 
-    console.log("API回傳:", data);
-
-    statusDiv.innerHTML = `找到 ${data.count} 筆資料`;
-
-    let html = "";
-
-    // 🤖 AI答案
-    if (data.answer) {
-      html += `
-      <div class="card ai">
-        <b>🤖 AI整理答案：</b><br><br>
-        ${data.answer}
-      </div>`;
+    if (data.count === 0) {
+      loading.innerText = "查無相關資料，請確認錯誤碼或換其他關鍵字。";
+      return;
     }
 
-    // 📄 原始結果
-    data.results.forEach(r => {
-      html += `
-      <div class="card">
-        <b>錯誤代碼：</b>${r.error_code || "未提供"}<br><br>
-        <b>錯誤說明：</b>${r.error_message || "未提供"}<br><br>
-        <b>原因：</b>${r.cause_of_error || "未提供"}<br><br>
-        <b>處理方式：</b>${r.error_correction || "未提供"}<br>
-      </div>`;
-    });
+    let text = data.answer || "已找到資料，但沒有產生 AI 回答。";
 
-    resultDiv.innerHTML = html;
+    text += `\n\n---\n共找到 ${data.count} 筆資料`;
+
+    if (data.results && data.results.length > 0) {
+      text += "\n\n📌 來源資料：";
+      data.results.slice(0, 3).forEach((r, i) => {
+        text += `\n\n[${i + 1}] 錯誤代碼：${r.error_code || "未提供"}`;
+        text += `\n頁碼：${r.page || "未提供"}`;
+      });
+    }
+
+    loading.innerText = text;
 
   } catch (err) {
+    loading.innerText = "連線失敗，請確認 Render API 是否正常啟動。";
     console.error(err);
-    statusDiv.innerHTML = "<span style='color:red'>連線失敗，請檢查後端或 ngrok</span>";
   }
 }
 </script>
-
 </body>
 </html>
