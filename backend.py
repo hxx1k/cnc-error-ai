@@ -85,7 +85,7 @@ client = QdrantClient(
     api_key=QDRANT_API_KEY,
 )
 
-COLLECTION_NAME = "error_codes"
+COLLECTION_NAME = "l2100_manuals"
 
 # =========================
 # Gemini
