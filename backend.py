@@ -188,16 +188,33 @@ def generate_answer(
 # =========================
 # 關鍵字搜尋
 # =========================
-def keyword_search(
-    query: str,
-    limit: int = 5
-):
+def keyword_search(query: str, limit: int = 5):
+
+    import re
 
     results = []
-
     offset = None
 
     q = query.lower().strip()
+
+    # 抓出真正關鍵字，例如：
+    # G02 是什麼 → G02
+    # 參數 0002 是什麼 → 0002
+    # MOT 警報怎麼排除 → MOT
+    keywords = re.findall(
+        r"[gm]\d{1,4}|int\s*\d+|mot\s*\d+|op\s*\d+|rtex\s*\d+|ethercat|參數\s*\d+|\d{4}",
+        q,
+        flags=re.IGNORECASE
+    )
+
+    clean_keywords = []
+
+    for k in keywords:
+        k = k.lower().replace("參數", "").strip()
+        clean_keywords.append(k)
+
+    if not clean_keywords:
+        clean_keywords = [q]
 
     for _ in range(50):
 
@@ -221,16 +238,17 @@ def keyword_search(
                 str(payload.get("text", ""))
             ]).lower()
 
-            if q in search_text:
+            for key in clean_keywords:
 
-                results.append(payload)
+                if key in search_text:
+
+                    results.append(payload)
+                    break
 
             if len(results) >= limit:
-
                 return results
 
         if offset is None:
-
             break
 
     return results
