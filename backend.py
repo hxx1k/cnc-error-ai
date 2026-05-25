@@ -25,7 +25,11 @@ app.add_middleware(
 # static 圖片資料夾
 # =========================
 if os.path.exists("static"):
-    app.mount("/static", StaticFiles(directory="static"), name="static")
+    app.mount(
+        "/static",
+        StaticFiles(directory="static"),
+        name="static"
+    )
 
 
 # =========================
@@ -56,6 +60,7 @@ qdrant = QdrantClient(
 gemini_client = None
 
 if GEMINI_API_KEY:
+
     gemini_client = genai.Client(
         api_key=GEMINI_API_KEY
     )
@@ -65,6 +70,7 @@ if GEMINI_API_KEY:
 # Request Model
 # =========================
 class QueryRequest(BaseModel):
+
     query: str
     use_ollama: bool = True
 
@@ -92,7 +98,7 @@ def ui():
 
 
 # =========================
-# 組 context
+# 建立 context
 # =========================
 def build_context(results: List[dict]) -> str:
 
@@ -102,10 +108,18 @@ def build_context(results: List[dict]) -> str:
 
         context += f"""
 【資料 {i}】
-來源：{r.get("source_file", "")}
-頁碼：{r.get("page", "")}
-標題：{r.get("title", "")}
-代碼：{"、".join(r.get("codes", []))}
+
+來源：
+{r.get("source_file", "")}
+
+頁碼：
+{r.get("page", "")}
+
+標題：
+{r.get("title", "")}
+
+代碼：
+{"、".join(r.get("codes", []))}
 
 內容：
 {r.get("text", "")[:2500]}
@@ -117,28 +131,41 @@ def build_context(results: List[dict]) -> str:
 # =========================
 # Gemini 回答
 # =========================
-def generate_answer(query: str, results: List[dict]) -> str:
+def generate_answer(
+    query: str,
+    results: List[dict]
+) -> str:
 
     context = build_context(results)
 
     if not gemini_client:
+
         return context[:3000]
 
     prompt = f"""
 你是 CNC L2100 車床技術手冊 AI 助理。
 
 請只能根據下方資料回答。
+
 不要自己亂猜。
 
 如果資料不足，
 請直接說：
+
 「目前資料中沒有找到足夠資訊」。
+
+======================
 
 使用者問題：
 {query}
 
+======================
+
 檢索到的手冊資料：
+
 {context}
+
+======================
 
 請使用繁體中文回答。
 
@@ -161,7 +188,10 @@ def generate_answer(query: str, results: List[dict]) -> str:
 # =========================
 # 關鍵字搜尋
 # =========================
-def keyword_search(query: str, limit: int = 5):
+def keyword_search(
+    query: str,
+    limit: int = 5
+):
 
     results = []
 
@@ -200,6 +230,7 @@ def keyword_search(query: str, limit: int = 5):
                 return results
 
         if offset is None:
+
             break
 
     return results
@@ -216,49 +247,55 @@ def search(req: QueryRequest):
     try:
 
         results = keyword_search(
-            query,
+            query=query,
             limit=5
         )
+
+        if not results:
+
+            return {
+                "query": query,
+                "count": 0,
+                "answer": "查無相關資料，請換一個關鍵字。",
+                "results": [],
+                "images": []
+            }
+
+        images = []
+
+        for payload in results:
+
+            for img in payload.get("images", []):
+
+                if img not in images:
+
+                    images.append(img)
+
+        try:
+
+            answer = generate_answer(
+                query,
+                results
+            )
+
+        except Exception as gemini_error:
+
+            answer = f"Gemini 生成失敗：{gemini_error}"
+
+        return {
+            "query": query,
+            "count": len(results),
+            "answer": answer,
+            "results": results,
+            "images": images
+        }
 
     except Exception as e:
 
         return {
             "query": query,
             "count": 0,
-            "answer": f"Qdrant 搜尋失敗：{e}",
+            "answer": f"後端錯誤：{e}",
             "results": [],
             "images": []
         }
-
-    if not results:
-
-        return {
-            "query": query,
-            "count": 0,
-            "answer": "查無相關資料，請換一個關鍵字。",
-            "results": [],
-            "images": []
-        }
-
-    images = []
-
-    for payload in results:
-
-        for img in payload.get("images", []):
-
-            if img not in images:
-
-                images.append(img)
-
-    answer = generate_answer(
-        query,
-        results
-    )
-
-    return {
-        "query": query,
-        "count": len(results),
-        "answer": answer,
-        "results": results,
-        "images": images
-    }
