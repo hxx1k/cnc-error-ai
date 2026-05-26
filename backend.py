@@ -2,6 +2,7 @@ import os
 import json
 import re
 from typing import List
+from urllib.parse import quote
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -32,6 +33,7 @@ QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 COLLECTION_NAME = "l2100_manuals"
+BASE_URL = "https://cnc-error-ai.onrender.com"
 
 
 IMAGE_MAP = []
@@ -78,6 +80,18 @@ def home():
 @app.get("/ui")
 def ui():
     return FileResponse("index.html")
+
+
+def safe_image_url(path: str):
+    path = str(path)
+
+    if path.startswith("http://") or path.startswith("https://"):
+        return path
+
+    if not path.startswith("/"):
+        path = "/" + path
+
+    return BASE_URL + quote(path)
 
 
 def extract_keywords(query: str):
@@ -210,10 +224,12 @@ def search_images(query: str, results: List[dict], limit: int = 4):
     for item in IMAGE_MAP:
         if allowed_sources:
             matched_source = False
+
             for src in allowed_sources:
                 if same_manual(src, item):
                     matched_source = True
                     break
+
             if not matched_source:
                 continue
 
@@ -226,6 +242,7 @@ def search_images(query: str, results: List[dict], limit: int = 4):
         ]).lower().replace(" ", "")
 
         score = 0
+
         for key in keywords:
             if key and key in text:
                 score += 2
@@ -239,9 +256,10 @@ def search_images(query: str, results: List[dict], limit: int = 4):
 
     for score, item in scored:
         img = item.get("image")
+
         if img:
             images.append({
-                "url": img,
+                "url": safe_image_url(img),
                 "page": item.get("page", ""),
                 "source_file": item.get("source_file", ""),
                 "score": score
