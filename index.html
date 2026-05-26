@@ -5,7 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>L2100 車床手冊 AI 助理</title>
 <style>
-*{box-sizing:border-box}
+*.image-meta{
+    font-size:14px;
+    color:#cbd5e1;
+    margin-top:10px;
+    margin-bottom:6px;
+}
+{box-sizing:border-box}
 body{margin:0;background:#0b1120;color:#e5e7eb;font-family:"Microsoft JhengHei",Arial,sans-serif;height:100vh;display:flex}
 .sidebar{width:280px;background:#020617;border-right:1px solid #1e293b;padding:22px}
 .logo{font-size:22px;font-weight:800;margin-bottom:10px}
@@ -163,8 +169,20 @@ async function sendMessage(){
         if(data.images && data.images.length>0){
             html+=`<div class="image-title">相關手冊圖片：</div>`;
             for(const img of data.images){
-                html+=renderImage(img);
-            }
+    if(typeof img === "string"){
+        html+=`
+            <div class="image-meta">圖片來源：未標示</div>
+            <img src="${img}" class="result-image" loading="lazy">
+        `;
+    }else{
+        html+=`
+            <div class="image-meta">
+                圖片來源：${img.source_file || "未知手冊"}，第 ${img.page || "未知"} 頁
+            </div>
+            <img src="${img.url}" class="result-image" loading="lazy">
+        `;
+    }
+}
         }
 
         loading.classList.remove("loading");
