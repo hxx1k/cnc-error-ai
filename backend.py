@@ -24,8 +24,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-if os.path.exists("static"):
-    app.mount("/static", StaticFiles(directory="static"), name="static")
+# 一定要 mount static，Render 才能顯示圖片
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
 QDRANT_URL = os.getenv("QDRANT_URL")
