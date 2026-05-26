@@ -208,16 +208,12 @@ def search_images(query: str, results: List[dict], limit: int = 4):
     scored = []
 
     for item in IMAGE_MAP:
-        item_source = str(item.get("source_file", ""))
-
         if allowed_sources:
             matched_source = False
-
             for src in allowed_sources:
                 if same_manual(src, item):
                     matched_source = True
                     break
-
             if not matched_source:
                 continue
 
@@ -227,29 +223,12 @@ def search_images(query: str, results: List[dict], limit: int = 4):
             " ".join(item.get("keywords", [])),
             str(item.get("source_file", "")),
             str(item.get("image", ""))
-        ])
-
-        text = text.lower().replace(" ", "")
+        ]).lower().replace(" ", "")
 
         score = 0
-
         for key in keywords:
             if key and key in text:
                 score += 2
-
-        q = query.lower()
-
-        if "g02" in q and ("圓弧" in text or "g03" in text):
-            score += 3
-
-        if "g03" in q and ("圓弧" in text or "g02" in text):
-            score += 3
-
-        if "ethercat" in q and "ethercat" in text:
-            score += 3
-
-        if "警報" in q and "警報" in text:
-            score += 2
 
         if score > 0:
             scored.append((score, item))
@@ -260,42 +239,16 @@ def search_images(query: str, results: List[dict], limit: int = 4):
 
     for score, item in scored:
         img = item.get("image")
-
-        if img and img not in images:
-            images.append(img)
+        if img:
+            images.append({
+                "url": img,
+                "page": item.get("page", ""),
+                "source_file": item.get("source_file", ""),
+                "score": score
+            })
 
         if len(images) >= limit:
             break
-
-    if images:
-        return images
-
-    return collect_images_from_results(results, limit=limit)
-
-
-def collect_images_from_results(results: List[dict], limit: int = 4):
-    images = []
-
-    for payload in results:
-        source_file = str(payload.get("source_file", ""))
-
-        for img in payload.get("images", []):
-            img = str(img)
-
-            if "程式" in source_file and "程式" not in img:
-                continue
-
-            if "維護" in source_file and "維護" not in img:
-                continue
-
-            if "參數" in source_file and "參數" not in img:
-                continue
-
-            if img and img not in images:
-                images.append(img)
-
-            if len(images) >= limit:
-                return images
 
     return images
 

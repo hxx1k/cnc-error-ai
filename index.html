@@ -4,178 +4,52 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>L2100 車床手冊 AI 助理</title>
-
 <style>
 *{box-sizing:border-box}
-body{
-    margin:0;
-    background:#0b1120;
-    color:#e5e7eb;
-    font-family:"Microsoft JhengHei",Arial,sans-serif;
-    height:100vh;
-    display:flex;
-}
-.sidebar{
-    width:280px;
-    background:#020617;
-    border-right:1px solid #1e293b;
-    padding:22px;
-}
-.logo{
-    font-size:22px;
-    font-weight:800;
-    margin-bottom:10px;
-}
-.sub{
-    color:#94a3b8;
-    font-size:14px;
-    line-height:1.6;
-    margin-bottom:22px;
-}
-.card{
-    background:#0f172a;
-    border:1px solid #1e293b;
-    border-radius:16px;
-    padding:14px;
-    margin-bottom:12px;
-    color:#cbd5e1;
-    font-size:14px;
-}
+body{margin:0;background:#0b1120;color:#e5e7eb;font-family:"Microsoft JhengHei",Arial,sans-serif;height:100vh;display:flex}
+.sidebar{width:280px;background:#020617;border-right:1px solid #1e293b;padding:22px}
+.logo{font-size:22px;font-weight:800;margin-bottom:10px}
+.sub{color:#94a3b8;font-size:14px;line-height:1.6;margin-bottom:22px}
+.card{background:#0f172a;border:1px solid #1e293b;border-radius:16px;padding:14px;margin-bottom:12px;color:#cbd5e1;font-size:14px}
 .card b{color:white}
-.main{
-    flex:1;
-    display:flex;
-    flex-direction:column;
-}
-.topbar{
-    padding:18px 24px;
-    border-bottom:1px solid #1e293b;
-    background:#111827;
-    font-size:20px;
-    font-weight:bold;
-}
-.chat{
-    flex:1;
-    overflow-y:auto;
-    padding:28px;
-}
-.message{
-    max-width:920px;
-    margin:0 auto 22px auto;
-    padding:18px 20px;
-    border-radius:18px;
-    line-height:1.8;
-    white-space:pre-wrap;
-    word-break:break-word;
-}
-.user{
-    background:#2563eb;
-    color:white;
-}
-.bot{
-    background:#1e293b;
-    border:1px solid #334155;
-}
-.quick{
-    max-width:920px;
-    margin:0 auto 20px auto;
-    display:flex;
-    flex-wrap:wrap;
-    gap:10px;
-}
-.quick button{
-    background:#0f172a;
-    border:1px solid #334155;
-    color:#cbd5e1;
-    padding:10px 14px;
-    border-radius:999px;
-    cursor:pointer;
-}
-.quick button:hover{
-    background:#1e293b;
-    color:white;
-}
-.input-area{
-    display:flex;
-    gap:12px;
-    padding:20px 28px;
-    background:#111827;
-    border-top:1px solid #1e293b;
-}
-input{
-    flex:1;
-    padding:16px 18px;
-    border:none;
-    border-radius:16px;
-    background:#1e293b;
-    color:white;
-    font-size:16px;
-    outline:none;
-}
-button.send{
-    border:none;
-    border-radius:16px;
-    padding:16px 26px;
-    background:#22c55e;
-    color:white;
-    font-size:16px;
-    font-weight:bold;
-    cursor:pointer;
-}
+.main{flex:1;display:flex;flex-direction:column}
+.topbar{padding:18px 24px;border-bottom:1px solid #1e293b;background:#111827;font-size:20px;font-weight:bold}
+.chat{flex:1;overflow-y:auto;padding:28px}
+.message{max-width:920px;margin:0 auto 22px auto;padding:18px 20px;border-radius:18px;line-height:1.8;white-space:pre-wrap;word-break:break-word}
+.user{background:#2563eb;color:white}
+.bot{background:#1e293b;border:1px solid #334155}
+.quick{max-width:920px;margin:0 auto 20px auto;display:flex;flex-wrap:wrap;gap:10px}
+.quick button{background:#0f172a;border:1px solid #334155;color:#cbd5e1;padding:10px 14px;border-radius:999px;cursor:pointer}
+.quick button:hover{background:#1e293b;color:white}
+.input-area{display:flex;gap:12px;padding:20px 28px;background:#111827;border-top:1px solid #1e293b}
+input{flex:1;padding:16px 18px;border:none;border-radius:16px;background:#1e293b;color:white;font-size:16px;outline:none}
+button.send{border:none;border-radius:16px;padding:16px 26px;background:#22c55e;color:white;font-size:16px;font-weight:bold;cursor:pointer}
 button.send:hover{background:#16a34a}
-.result-image{
-    width:100%;
-    max-width:760px;
-    display:block;
-    margin-top:16px;
-    border-radius:14px;
-    border:1px solid #475569;
-}
-.image-title{
-    margin-top:22px;
-    font-weight:bold;
-    color:#facc15;
-}
-.badge{
-    display:inline-block;
-    background:#334155;
-    color:#cbd5e1;
-    padding:3px 8px;
-    border-radius:999px;
-    font-size:12px;
-    margin-bottom:10px;
-}
+.result-image{width:100%;max-width:760px;display:block;margin-top:10px;border-radius:14px;border:1px solid #475569}
+.image-title{margin-top:22px;font-weight:bold;color:#facc15}
+.image-meta{font-size:14px;color:#cbd5e1;margin-top:6px;margin-bottom:6px}
+.badge{display:inline-block;background:#334155;color:#cbd5e1;padding:3px 8px;border-radius:999px;font-size:12px;margin-bottom:10px}
 .loading{opacity:.75}
-@media(max-width:800px){
-    body{display:block}
-    .sidebar{display:none}
-    .main{height:100vh}
-}
+@media(max-width:800px){body{display:block}.sidebar{display:none}.main{height:100vh}}
 </style>
 </head>
 
 <body>
-
 <div class="sidebar">
     <div class="logo">🔧 L2100 Manual AI</div>
     <div class="sub">
         只回答三本 L2100 車床手冊內的內容。<br>
         適合查詢 G/M 指令、維護流程、參數、警報與圖片說明。
     </div>
-
     <div class="card"><b>程式說明手冊</b><br>G 碼、M 碼、Macro、加工指令</div>
     <div class="card"><b>中文維護手冊</b><br>軟體維護、硬體架構、I/O、故障排除</div>
     <div class="card"><b>參數警報手冊</b><br>系統參數、警報、驅動器、通訊設定</div>
 </div>
 
 <div class="main">
-
-<div class="topbar">
-    L2100 車床手冊 AI 助理
-</div>
+<div class="topbar">L2100 車床手冊 AI 助理</div>
 
 <div class="chat" id="chat">
-
 <div class="message bot">
 <span class="badge">三本手冊限定回答</span>
 你好，我是 L2100 車床手冊 AI 助理。
@@ -196,18 +70,25 @@ button.send:hover{background:#16a34a}
     <button onclick="askQuick('EtherCAT 版本要注意什麼？')">EtherCAT</button>
     <button onclick="askQuick('M03 是什麼功能？')">M03 功能</button>
 </div>
-
 </div>
 
 <div class="input-area">
     <input id="query" placeholder="輸入 L2100 手冊問題，例如：G02 是什麼？" onkeydown="handleKey(event)">
     <button class="send" onclick="sendMessage()">送出</button>
 </div>
-
 </div>
 
 <script>
 const API_URL = "/search";
+
+function escapeHtml(text){
+    return String(text || "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+}
 
 function addMessage(text,type){
     const chat=document.getElementById("chat");
@@ -220,9 +101,7 @@ function addMessage(text,type){
 }
 
 function handleKey(event){
-    if(event.key==="Enter"){
-        sendMessage();
-    }
+    if(event.key==="Enter") sendMessage();
 }
 
 function askQuick(text){
@@ -230,12 +109,30 @@ function askQuick(text){
     sendMessage();
 }
 
+function renderImage(img){
+    if(typeof img === "string"){
+        return `
+            <div class="image-meta">圖片來源：未標示手冊與頁碼</div>
+            <img src="${img}" class="result-image" loading="lazy">
+        `;
+    }
+
+    const url = img.url || img.image || "";
+    const source = escapeHtml(img.source_file || "未知手冊");
+    const page = escapeHtml(img.page || "未知");
+
+    return `
+        <div class="image-meta">圖片來源：${source}，第 ${page} 頁</div>
+        <img src="${url}" class="result-image" loading="lazy">
+    `;
+}
+
 async function sendMessage(){
     const input=document.getElementById("query");
     const q=input.value.trim();
     if(!q)return;
 
-    addMessage(q,"user");
+    addMessage(escapeHtml(q),"user");
     input.value="";
 
     const loading=addMessage("🔍 正在查詢三本 L2100 手冊...","bot loading");
@@ -244,10 +141,7 @@ async function sendMessage(){
         const res=await fetch(API_URL,{
             method:"POST",
             headers:{"Content-Type":"application/json"},
-            body:JSON.stringify({
-                query:q,
-                use_ollama:true
-            })
+            body:JSON.stringify({query:q,use_ollama:true})
         });
 
         if(!res.ok){
@@ -264,12 +158,12 @@ async function sendMessage(){
 
         let html="";
         html+=`<span class="badge">查到 ${data.count} 筆手冊資料</span>`;
-        html+=`<div>${data.answer}</div>`;
+        html+=`<div>${escapeHtml(data.answer).replaceAll("\n","<br>")}</div>`;
 
         if(data.images && data.images.length>0){
             html+=`<div class="image-title">相關手冊圖片：</div>`;
             for(const img of data.images){
-                html+=`<img src="${img}" class="result-image" loading="lazy">`;
+                html+=renderImage(img);
             }
         }
 
@@ -282,6 +176,5 @@ async function sendMessage(){
     }
 }
 </script>
-
 </body>
 </html>
