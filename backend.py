@@ -121,6 +121,10 @@ def extract_keywords(query: str):
     return out
 
 
+def same_manual_name(a, b):
+    return normalize(a) == normalize(b)
+
+
 def keyword_search(query: str, limit: int = 5):
     keys = extract_keywords(query)
 
@@ -182,27 +186,11 @@ def keyword_search(query: str, limit: int = 5):
     return unique
 
 
-def same_manual_name(a, b):
-    return normalize(a) == normalize(b)
-
-
-def search_sections(query: str, results: List[dict]):
+def search_sections(query: str):
     keys = extract_keywords(query)
     matched = []
 
-    result_sources = list({
-        str(r.get("source_file", ""))
-        for r in results
-        if r.get("source_file")
-    })
-
     for sec in SECTION_MAP:
-        sec_source = str(sec.get("source_file", ""))
-
-        if result_sources:
-            if not any(same_manual_name(src, sec_source) for src in result_sources):
-                continue
-
         sec_text = normalize(
             str(sec.get("section", "")) + " " +
             " ".join(sec.get("codes", [])) + " " +
@@ -213,25 +201,30 @@ def search_sections(query: str, results: List[dict]):
 
         for key in keys:
             if key in sec_text:
-                score += 10
+                score += 100
 
         if score > 0:
             matched.append((score, sec))
 
     matched.sort(key=lambda x: x[0], reverse=True)
-    return [x[1] for x in matched[:3]]
+
+    return [x[1] for x in matched[:1]]
 
 
 def search_images(query: str, results: List[dict], limit: int = 6):
-    sections = search_sections(query, results)
+    sections = search_sections(query)
 
     images = []
     used = set()
 
-    for sec in sections:
+    if sections:
+        sec = sections[0]
+
         source_file = str(sec.get("source_file", ""))
         start_page = int(sec.get("start_page", 0))
         end_page = int(sec.get("end_page", start_page))
+
+        candidates = []
 
         for img in IMAGE_MAP:
             img_source = str(img.get("source_file", ""))
@@ -250,7 +243,31 @@ def search_images(query: str, results: List[dict], limit: int = 6):
 
             img_path = img.get("image", "")
 
-            if not img_path or img_path in used:
+            if not img_path:
+                continue
+
+            img_text = normalize(
+                str(img.get("caption", "")) + " " +
+                " ".join(img.get("codes", [])) + " " +
+                " ".join(img.get("keywords", [])) + " " +
+                str(img.get("image", ""))
+            )
+
+            score = 10
+
+            for key in extract_keywords(query):
+                if key in img_text:
+                    score += 30
+
+            # 章節內圖片依頁碼由前到後；但若 caption 有命中，會排更前
+            candidates.append((score, img_page, img))
+
+        candidates.sort(key=lambda x: (-x[0], x[1]))
+
+        for score, img_page, img in candidates:
+            img_path = img.get("image", "")
+
+            if img_path in used:
                 continue
 
             used.add(img_path)
@@ -263,12 +280,11 @@ def search_images(query: str, results: List[dict], limit: int = 6):
             })
 
             if len(images) >= limit:
-                return images
+                break
 
-    if images:
         return images
 
-    # 沒有對到 section_map 時，退回搜尋結果頁碼附近
+    # 沒有對到章節，才退回搜尋結果附近頁面
     for r in results[:3]:
         source_file = str(r.get("source_file", ""))
         page = r.get("page")
@@ -290,17 +306,22 @@ def search_images(query: str, results: List[dict], limit: int = 6):
             if not same_manual_name(source_file, img_source):
                 continue
 
-            if page <= img_page <= page + 3:
-                img_path = img.get("image", "")
+            if not (page <= img_page <= page + 3):
+                continue
 
-                if img_path and img_path not in used:
-                    used.add(img_path)
-                    images.append({
-                        "url": safe_image_url(img_path),
-                        "source_file": source_file,
-                        "page": img_page,
-                        "section": "搜尋結果附近頁面"
-                    })
+            img_path = img.get("image", "")
+
+            if not img_path or img_path in used:
+                continue
+
+            used.add(img_path)
+
+            images.append({
+                "url": safe_image_url(img_path),
+                "source_file": source_file,
+                "page": img_page,
+                "section": "搜尋結果附近頁面"
+            })
 
             if len(images) >= limit:
                 return images
