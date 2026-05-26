@@ -13,10 +13,6 @@ from qdrant_client import QdrantClient
 from google import genai
 
 
-# =====================================================
-# FastAPI
-# =====================================================
-
 app = FastAPI()
 
 app.add_middleware(
@@ -27,22 +23,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-# =====================================================
-# Static
-# =====================================================
-
 if os.path.exists("static"):
-    app.mount(
-        "/static",
-        StaticFiles(directory="static"),
-        name="static"
-    )
+    app.mount("/static", StaticFiles(directory="static"), name="static")
 
-
-# =====================================================
-# ENV
-# =====================================================
 
 QDRANT_URL = os.getenv("QDRANT_URL")
 QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
@@ -51,26 +34,16 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 COLLECTION_NAME = "l2100_manuals"
 
 
-# =====================================================
-# Load Image Map
-# =====================================================
-
 IMAGE_MAP = []
 
 try:
     with open("image_map.json", "r", encoding="utf-8") as f:
         IMAGE_MAP = json.load(f)
-
     print(f"成功載入 image_map.json：{len(IMAGE_MAP)} 張圖片")
-
 except Exception as e:
     print("image_map.json 載入失敗：", e)
     IMAGE_MAP = []
 
-
-# =====================================================
-# Qdrant
-# =====================================================
 
 qdrant = QdrantClient(
     url=QDRANT_URL,
@@ -81,34 +54,19 @@ qdrant = QdrantClient(
 )
 
 
-# =====================================================
-# Gemini
-# =====================================================
-
 gemini_client = None
 
 if GEMINI_API_KEY:
-    gemini_client = genai.Client(
-        api_key=GEMINI_API_KEY
-    )
+    gemini_client = genai.Client(api_key=GEMINI_API_KEY)
 
-
-# =====================================================
-# Request Model
-# =====================================================
 
 class QueryRequest(BaseModel):
     query: str
     use_ollama: bool = True
 
 
-# =====================================================
-# UI
-# =====================================================
-
 @app.get("/")
 def home():
-
     return {
         "status": "ok",
         "message": "L2100 Manual AI API Running",
@@ -122,16 +80,11 @@ def ui():
     return FileResponse("index.html")
 
 
-# =====================================================
-# Keyword Extract
-# =====================================================
-
 def extract_keywords(query: str):
-
     q = query.lower()
 
     keywords = re.findall(
-        r"[gm]\d{1,4}|int\s*\d+|mot\s*\d+|op\s*\d+|rtex\s*\d+|ethercat|參數\s*\d+|\d{4}|圓弧|插補|螺旋|暫停|主軸|刀具|警報|補正|座標|原點|維護|硬體|軟體",
+        r"[gm]\d{1,4}|int\s*\d+|mot\s*\d+|op\s*\d+|rtex\s*\d+|ethercat|參數\s*\d+|\d{4}|圓弧|插補|螺旋|暫停|主軸|刀具|警報|補正|座標|原點|維護|硬體|軟體|螺紋|攻牙|鑽孔|循環",
         q,
         flags=re.IGNORECASE
     )
@@ -139,7 +92,6 @@ def extract_keywords(query: str):
     out = []
 
     for k in keywords:
-
         k = k.lower()
         k = k.replace("參數", "")
         k = k.replace(" ", "")
@@ -149,24 +101,50 @@ def extract_keywords(query: str):
             out.append(k)
 
     if not out:
-        out = [q]
+        out = [q.replace(" ", "")]
 
     return out
 
 
-# =====================================================
-# Keyword Search
-# =====================================================
+def same_manual(source_file: str, image_item: dict):
+    source_file = str(source_file)
+    img_source = str(image_item.get("source_file", ""))
+    img_path = str(image_item.get("image", ""))
+
+    if img_source and img_source == source_file:
+        return True
+
+    if "程式" in source_file and "程式" in img_path:
+        return True
+
+    if "維護" in source_file and "維護" in img_path:
+        return True
+
+    if "參數" in source_file and "參數" in img_path:
+        return True
+
+    return False
+
+
+def get_allowed_sources(results: List[dict]):
+    sources = []
+
+    for r in results:
+        src = str(r.get("source_file", ""))
+
+        if src and src not in sources:
+            sources.append(src)
+
+    return sources
+
 
 def keyword_search(query: str, limit: int = 5):
-
     keywords = extract_keywords(query)
 
     results = []
     offset = None
 
     for _ in range(80):
-
         points, offset = qdrant.scroll(
             collection_name=COLLECTION_NAME,
             limit=100,
@@ -176,7 +154,6 @@ def keyword_search(query: str, limit: int = 5):
         )
 
         for p in points:
-
             payload = p.payload or {}
 
             search_text = " ".join([
@@ -192,7 +169,6 @@ def keyword_search(query: str, limit: int = 5):
             score = 0
 
             for key in keywords:
-
                 if key and key in search_text:
                     score += 1
 
@@ -203,20 +179,16 @@ def keyword_search(query: str, limit: int = 5):
         if offset is None:
             break
 
-    results.sort(
-        key=lambda x: x.get("_score", 0),
-        reverse=True
-    )
+    results.sort(key=lambda x: x.get("_score", 0), reverse=True)
 
     unique = []
     seen = set()
 
     for r in results:
-
         uid = (
             str(r.get("source_file", "")),
             str(r.get("page", "")),
-            str(r.get("text", ""))[:50]
+            str(r.get("text", ""))[:80]
         )
 
         if uid not in seen:
@@ -229,17 +201,25 @@ def keyword_search(query: str, limit: int = 5):
     return unique
 
 
-# =====================================================
-# Image Search
-# =====================================================
-
-def search_images(query: str, limit: int = 4):
-
+def search_images(query: str, results: List[dict], limit: int = 4):
     keywords = extract_keywords(query)
+    allowed_sources = get_allowed_sources(results)
 
     scored = []
 
     for item in IMAGE_MAP:
+        item_source = str(item.get("source_file", ""))
+
+        if allowed_sources:
+            matched_source = False
+
+            for src in allowed_sources:
+                if same_manual(src, item):
+                    matched_source = True
+                    break
+
+            if not matched_source:
+                continue
 
         text = " ".join([
             str(item.get("caption", "")),
@@ -254,11 +234,9 @@ def search_images(query: str, limit: int = 4):
         score = 0
 
         for key in keywords:
-
             if key and key in text:
                 score += 2
 
-        # 額外語意加強
         q = query.lower()
 
         if "g02" in q and ("圓弧" in text or "g03" in text):
@@ -276,15 +254,11 @@ def search_images(query: str, limit: int = 4):
         if score > 0:
             scored.append((score, item))
 
-    scored.sort(
-        key=lambda x: x[0],
-        reverse=True
-    )
+    scored.sort(key=lambda x: x[0], reverse=True)
 
     images = []
 
     for score, item in scored:
-
         img = item.get("image")
 
         if img and img not in images:
@@ -293,19 +267,43 @@ def search_images(query: str, limit: int = 4):
         if len(images) >= limit:
             break
 
+    if images:
+        return images
+
+    return collect_images_from_results(results, limit=limit)
+
+
+def collect_images_from_results(results: List[dict], limit: int = 4):
+    images = []
+
+    for payload in results:
+        source_file = str(payload.get("source_file", ""))
+
+        for img in payload.get("images", []):
+            img = str(img)
+
+            if "程式" in source_file and "程式" not in img:
+                continue
+
+            if "維護" in source_file and "維護" not in img:
+                continue
+
+            if "參數" in source_file and "參數" not in img:
+                continue
+
+            if img and img not in images:
+                images.append(img)
+
+            if len(images) >= limit:
+                return images
+
     return images
 
 
-# =====================================================
-# Build Context
-# =====================================================
-
 def build_context(results: List[dict]):
-
     context = ""
 
     for i, r in enumerate(results, 1):
-
         context += f"""
 【資料 {i}】
 
@@ -325,12 +323,7 @@ def build_context(results: List[dict]):
     return context
 
 
-# =====================================================
-# Gemini Answer
-# =====================================================
-
 def generate_answer(query: str, results: List[dict]):
-
     context = build_context(results)
 
     if not gemini_client:
@@ -360,7 +353,7 @@ def generate_answer(query: str, results: List[dict]):
 1. 查詢重點
 2. 功能/說明
 3. 使用注意事項
-4. 頁碼
+4. 來源頁碼
 """
 
     response = gemini_client.models.generate_content(
@@ -371,24 +364,14 @@ def generate_answer(query: str, results: List[dict]):
     return response.text
 
 
-# =====================================================
-# Search API
-# =====================================================
-
 @app.post("/search")
 def search(req: QueryRequest):
-
     query = req.query.strip()
 
     try:
-
-        results = keyword_search(
-            query=query,
-            limit=5
-        )
+        results = keyword_search(query=query, limit=5)
 
         if not results:
-
             return {
                 "query": query,
                 "count": 0,
@@ -399,18 +382,17 @@ def search(req: QueryRequest):
 
         images = search_images(
             query=query,
+            results=results,
             limit=4
         )
 
         try:
-
             answer = generate_answer(
                 query=query,
                 results=results
             )
 
         except Exception as e:
-
             answer = f"Gemini 生成失敗：{e}"
 
         return {
@@ -422,7 +404,6 @@ def search(req: QueryRequest):
         }
 
     except Exception as e:
-
         return {
             "query": query,
             "count": 0,
