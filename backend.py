@@ -349,8 +349,9 @@ def build_context(results: List[dict]):
 def generate_answer(query: str, results: List[dict]):
     context = build_context(results)
 
+    # 沒有 Gemini API Key
     if not gemini_client:
-        return context[:3000]
+        return context[:4000]
 
     prompt = f"""
 你是 L2100 車床手冊 AI 助理。
@@ -360,7 +361,7 @@ def generate_answer(query: str, results: List[dict]):
 2. L2100 車床中文維護手冊
 3. L2100 車床參數警報手冊
 
-禁止自己幻想不存在的資訊。
+禁止幻想不存在的資訊。
 
 使用者問題：
 {query}
@@ -368,19 +369,50 @@ def generate_answer(query: str, results: List[dict]):
 手冊內容：
 {context}
 
-請使用繁體中文回答，並整理：
+請使用繁體中文整理：
 1. 查詢重點
-2. 功能/說明
+2. 功能說明
 3. 使用注意事項
 4. 來源頁碼
 """
 
-    response = gemini_client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=prompt
-    )
+    try:
 
-    return response.text
+        response = gemini_client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt
+        )
+
+        return response.text
+
+    except Exception as e:
+
+        print("Gemini 失敗：", e)
+
+        fallback = "【Gemini 額度不足，改用手冊原文模式】\n\n"
+
+        for i, r in enumerate(results, 1):
+
+            fallback += f"""
+========================
+資料 {i}
+========================
+
+來源：
+{r.get("source_file", "")}
+
+頁碼：
+{r.get("page", "")}
+
+標題：
+{r.get("title", "")}
+
+內容：
+{r.get("text", "")[:2500]}
+
+"""
+
+        return fallback
 
 
 @app.post("/search")
