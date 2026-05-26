@@ -1,0 +1,39 @@
+[
+  {
+    "source_file": "L2100車床中文維護手冊(全).pdf",
+    "section_no": "3.2.10",
+    "section": "EtherCAT 通訊型TDE 警報",
+    "codes": [
+      "ETHERCAT"
+    ],
+    "keywords": [
+      "EtherCAT 通訊型TDE 警報"
+    ],
+    "start_page": 212,
+    "end_page": 222
+  },
+  {
+    "source_file": "L2100車床中文維護手冊(全).pdf",
+    "section_no": "3.2.11",
+    "section": "EtherCAT 通訊型HIWIN D2 警報",
+    "codes": [
+      "ETHERCAT"
+    ],
+    "keywords": [
+      "EtherCAT 通訊型HIWIN D2 警報"
+    ],
+    "start_page": 223,
+    "end_page": 270
+  },
+  {
+    "source_file": "L2100車床參數警報手冊.pdf",
+    "section_no": "4.6.1",
+    "section": "JPS 使用外部Index Latch 功能設定",
+    "codes": [],
+    "keywords": [
+      "JPS 使用外部Index Latch 功能設定"
+    ],
+    "start_page": 252,
+    "end_page": 480
+  }
+]
