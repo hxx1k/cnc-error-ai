@@ -91,7 +91,7 @@ def safe_image_url(path: str):
     if not path.startswith("/"):
         path = "/" + path
 
-    return BASE_URL + quote(path)
+    return BASE_URL + quote(path, safe="/:")
 
 
 def extract_keywords(query: str):
