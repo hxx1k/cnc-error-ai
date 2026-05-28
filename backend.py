@@ -324,7 +324,7 @@ def search(req: QueryRequest):
     query = req.query.strip()
 
     try:
-        results = keyword_search(query, limit=5)
+        results = keyword_search(query, limit=10)
 
         if not results:
             return {
