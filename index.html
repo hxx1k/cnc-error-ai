@@ -4,143 +4,193 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>L2100 車床手冊 AI 助理</title>
+<title>L2100 CNC Manual AI</title>
 
 <style>
 
-body{
+*{
     margin:0;
     padding:0;
-    background:#020817;
-    color:white;
-    font-family:"Microsoft JhengHei",sans-serif;
+    box-sizing:border-box;
 }
 
-.container{
-    width:90%;
-    max-width:1100px;
-    margin:auto;
-    padding:30px 0;
+body{
+    font-family:"Microsoft JhengHei",sans-serif;
+    background:#0f172a;
+    color:white;
+    height:100vh;
+    overflow:hidden;
+}
+
+.app{
+    display:flex;
+    height:100vh;
+}
+
+/* 左側歷史 */
+
+.sidebar{
+    width:320px;
+    background:#111827;
+    border-right:1px solid #1f2937;
+    display:flex;
+    flex-direction:column;
+}
+
+.sidebar-header{
+    padding:20px;
+    font-size:22px;
+    font-weight:bold;
+    border-bottom:1px solid #1f2937;
+}
+
+.history-list{
+    flex:1;
+    overflow-y:auto;
+    padding:10px;
+}
+
+.history-item{
+    background:#1e293b;
+    border-radius:12px;
+    padding:14px;
+    margin-bottom:10px;
+    cursor:pointer;
+    transition:0.2s;
+    border:1px solid transparent;
+}
+
+.history-item:hover{
+    border:1px solid #3b82f6;
+    background:#263548;
+}
+
+.history-question{
+    font-size:15px;
+    font-weight:bold;
+    margin-bottom:8px;
+}
+
+.history-time{
+    font-size:12px;
+    color:#94a3b8;
+}
+
+/* 右側 */
+
+.main{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+}
+
+.header{
+    padding:20px;
+    border-bottom:1px solid #1f2937;
+    background:#111827;
+}
+
+.header h1{
+    font-size:28px;
+}
+
+.chat-container{
+    flex:1;
+    overflow-y:auto;
+    padding:30px;
+}
+
+.input-area{
+    padding:20px;
+    border-top:1px solid #1f2937;
+    background:#111827;
+}
+
+.input-box{
+    display:flex;
+    gap:12px;
+}
+
+textarea{
+    flex:1;
+    resize:none;
+    border:none;
+    outline:none;
+    background:#1e293b;
+    color:white;
+    padding:16px;
+    border-radius:14px;
+    font-size:16px;
+    height:70px;
+}
+
+button{
+    background:#2563eb;
+    color:white;
+    border:none;
+    padding:0 30px;
+    border-radius:14px;
+    font-size:16px;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+button:hover{
+    background:#1d4ed8;
 }
 
 .card{
-    background:#1e293b;
-    border:1px solid #334155;
+    background:#111827;
+    border:1px solid #1f2937;
     border-radius:18px;
-    padding:28px;
-    margin-bottom:20px;
+    padding:25px;
+    margin-bottom:24px;
 }
 
-.title{
-    font-size:34px;
+.question{
+    font-size:24px;
     font-weight:bold;
-    margin-bottom:10px;
-}
-
-.subtitle{
-    color:#cbd5e1;
-    line-height:1.8;
-}
-
-.quick-buttons{
-    display:flex;
-    flex-wrap:wrap;
-    gap:10px;
     margin-bottom:20px;
+    color:#60a5fa;
 }
 
-.quick-btn{
-    background:#0f172a;
-    border:1px solid #334155;
-    color:white;
-    padding:10px 18px;
-    border-radius:999px;
-    cursor:pointer;
+.answer{
+    white-space:pre-wrap;
+    line-height:1.8;
     font-size:16px;
 }
 
-.quick-btn:hover{
-    background:#1d4ed8;
+.image-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(350px,1fr));
+    gap:20px;
+    margin-top:30px;
 }
 
-.input-row{
-    display:flex;
-    gap:10px;
-    margin-bottom:20px;
-}
-
-#question{
-    flex:1;
-    padding:16px;
-    border-radius:14px;
-    border:none;
+.image-card{
     background:#1e293b;
-    color:white;
-    font-size:18px;
-}
-
-.send-btn{
-    background:#2563eb;
-    border:none;
-    color:white;
-    padding:16px 28px;
-    border-radius:14px;
-    cursor:pointer;
-    font-size:18px;
-}
-
-.send-btn:hover{
-    background:#1d4ed8;
-}
-
-.user-msg{
-    background:#2563eb;
-    padding:18px;
-    border-radius:18px;
-    margin-top:20px;
-    margin-bottom:15px;
-    font-size:22px;
-}
-
-.answer-card{
-    background:#1e293b;
-    border:1px solid #334155;
-    border-radius:18px;
-    padding:25px;
-    line-height:1.9;
-    white-space:pre-wrap;
-    font-size:17px;
-}
-
-.result-image{
-    width:100%;
-    max-width:700px;
-    border-radius:14px;
-    margin-top:12px;
-    margin-bottom:20px;
+    border-radius:16px;
+    overflow:hidden;
     border:1px solid #334155;
 }
 
 .image-meta{
+    padding:12px;
     font-size:14px;
-    color:#cbd5e1;
-    margin-top:10px;
-    margin-bottom:6px;
+    background:#0f172a;
 }
 
-.badge{
-    display:inline-block;
-    background:#475569;
-    color:white;
-    padding:4px 10px;
-    border-radius:999px;
-    font-size:12px;
-    margin-bottom:14px;
+.result-image{
+    width:100%;
+    display:block;
 }
 
-.loading{
-    color:#93c5fd;
-    margin-top:10px;
+.empty{
+    color:#94a3b8;
+    text-align:center;
+    margin-top:120px;
+    font-size:18px;
 }
 
 </style>
@@ -148,98 +198,187 @@ body{
 
 <body>
 
-<div class="container">
+<div class="app">
 
-    <div class="card">
+    <!-- 左邊歷史 -->
+    <div class="sidebar">
 
-        <div class="badge">三本手冊限定回答</div>
-
-        <div class="title">
-            你好，我是 L2100 車床手冊 AI 助理。
+        <div class="sidebar-header">
+            CNC 手冊 AI
         </div>
 
-        <div class="subtitle">
+        <div class="history-list" id="historyList"></div>
 
-你可以問：
+    </div>
 
-<br><br>
+    <!-- 右邊 -->
+    <div class="main">
 
-• G02 是什麼？<br>
-• G04 怎麼用？<br>
-• M03 是什麼功能？<br>
-• 參數0002 是什麼？<br>
-• MOT 警報怎麼排除？<br>
-• EtherCAT 版本要注意什麼？
+        <div class="header">
+            <h1>L2100 CNC 車床 AI 助理</h1>
+        </div>
+
+        <div class="chat-container" id="chatContainer">
+
+            <div class="empty">
+                請輸入問題開始查詢
+            </div>
+
+        </div>
+
+        <div class="input-area">
+
+            <div class="input-box">
+
+                <textarea
+                    id="queryInput"
+                    placeholder="例如：G02 是什麼？"
+                ></textarea>
+
+                <button onclick="search()">
+                    查詢
+                </button>
+
+            </div>
 
         </div>
 
     </div>
-
-    <div class="quick-buttons">
-
-        <button class="quick-btn" onclick="quickAsk('G02 是什麼？')">G02 是什麼？</button>
-
-        <button class="quick-btn" onclick="quickAsk('G04 暫停')">G04 暫停</button>
-
-        <button class="quick-btn" onclick="quickAsk('參數 0002')">參數 0002</button>
-
-        <button class="quick-btn" onclick="quickAsk('EtherCAT')">EtherCAT</button>
-
-        <button class="quick-btn" onclick="quickAsk('M03 功能')">M03 功能</button>
-
-    </div>
-
-    <div class="input-row">
-
-        <input
-            id="question"
-            type="text"
-            placeholder="輸入車床手冊問題..."
-            onkeydown="if(event.key==='Enter') sendMessage()"
-        >
-
-        <button class="send-btn" onclick="sendMessage()">
-            查詢
-        </button>
-
-    </div>
-
-    <div id="chat-area"></div>
 
 </div>
 
 <script>
 
-const API_URL = "https://cnc-error-ai.onrender.com/search";
+const API_URL = "/search"
 
-function quickAsk(text){
-    document.getElementById("question").value = text;
-    sendMessage();
+let historyData = JSON.parse(
+    localStorage.getItem("cnc_history") || "[]"
+)
+
+function saveHistory(){
+
+    localStorage.setItem(
+        "cnc_history",
+        JSON.stringify(historyData)
+    )
+
 }
 
-async function sendMessage(){
+function renderHistory(){
 
-    const input = document.getElementById("question");
+    const historyList =
+        document.getElementById("historyList")
 
-    const q = input.value.trim();
+    historyList.innerHTML = ""
 
-    if(!q) return;
+    historyData.forEach((item,index)=>{
 
-    const area = document.getElementById("chat-area");
+        historyList.innerHTML += `
+            <div class="history-item"
+                onclick="loadHistory(${index})">
 
-    area.innerHTML += `
-        <div class="user-msg">
-            ${q}
+                <div class="history-question">
+                    ${item.query}
+                </div>
+
+                <div class="history-time">
+                    ${item.time}
+                </div>
+
+            </div>
+        `
+
+    })
+
+}
+
+function loadHistory(index){
+
+    const data = historyData[index]
+
+    renderResult(data)
+
+}
+
+function renderResult(data){
+
+    const chat =
+        document.getElementById("chatContainer")
+
+    let html = `
+        <div class="card">
+
+            <div class="question">
+                ${data.query}
+            </div>
+
+            <div class="answer">
+                ${data.answer}
+            </div>
+    `
+
+    if(data.images && data.images.length > 0){
+
+        html += `
+            <div class="image-grid">
+        `
+
+        data.images.forEach(img=>{
+
+            html += `
+                <div class="image-card">
+
+                    <div class="image-meta">
+
+                        圖片來源：
+                        ${img.source_file || "未知手冊"}
+
+                        ｜ 第 ${img.page} 頁
+
+                        ${img.section
+                            ? "<br>章節：" + img.section
+                            : ""
+                        }
+
+                    </div>
+
+                    <img
+                        src="${img.url}"
+                        class="result-image"
+                    >
+
+                </div>
+            `
+
+        })
+
+        html += `</div>`
+
+    }
+
+    html += `</div>`
+
+    chat.innerHTML = html
+
+}
+
+async function search(){
+
+    const input =
+        document.getElementById("queryInput")
+
+    const query = input.value.trim()
+
+    if(!query) return
+
+    const chat =
+        document.getElementById("chatContainer")
+
+    chat.innerHTML = `
+        <div class="empty">
+            搜尋中...
         </div>
-    `;
-
-    area.innerHTML += `
-        <div class="answer-card loading" id="loading">
-            查詢中...
-        </div>
-    `;
-
-    input.value = "";
+    `
 
     try{
 
@@ -249,89 +388,37 @@ async function sendMessage(){
                 "Content-Type":"application/json"
             },
             body:JSON.stringify({
-                query:q
+                query:query,
+                use_ollama:true
             })
-        });
+        })
 
-        const data = await response.json();
+        const data = await response.json()
 
-        document.getElementById("loading").remove();
+        data.time =
+            new Date().toLocaleString()
 
-        let html = `
-            <div class="answer-card">
+        historyData.unshift(data)
 
-                <div class="badge">
-                    查到 ${data.count} 筆手冊資料
-                </div>
+        saveHistory()
 
-                ${data.answer}
-        `;
+        renderHistory()
 
-        if(data.images && data.images.length > 0){
-
-            html += `
-                <br><br>
-                <div style="color:#facc15;font-weight:bold;font-size:22px;">
-                    相關手冊圖片：
-                </div>
-            `;
-
-            for(const img of data.images){
-
-                if(typeof img === "string"){
-
-                    html += `
-                        <div class="image-meta">
-                            圖片來源：未標示
-                        </div>
-
-                        <img
-                            src="${img}"
-                            class="result-image"
-                            loading="lazy"
-                        >
-                    `;
-
-                }else{
-
-                    html += `
-                        <div class="image-meta">
-                            圖片來源：
-                            ${img.source_file || "未知手冊"}
-                            ，第 ${img.page || "未知"} 頁
-                        </div>
-
-                        <img
-                            src="${img.url}"
-                            class="result-image"
-                            loading="lazy"
-                        >
-                    `;
-                }
-            }
-        }
-
-        html += `</div>`;
-
-        area.innerHTML += html;
-
-        window.scrollTo({
-            top:document.body.scrollHeight,
-            behavior:"smooth"
-        });
+        renderResult(data)
 
     }catch(err){
 
-        document.getElementById("loading").remove();
-
-        area.innerHTML += `
-            <div class="answer-card">
-                API 連線失敗：
-                ${err}
+        chat.innerHTML = `
+            <div class="empty">
+                搜尋失敗：${err}
             </div>
-        `;
+        `
+
     }
+
 }
+
+renderHistory()
 
 </script>
 
