@@ -201,6 +201,7 @@ def get_section_page_images(section):
     images = []
 
     manual_type = section.get("manual_type", "")
+    source_file = section.get("source_file", "")
     start_page = int(section.get("start_page", 0))
     end_page = int(section.get("end_page", start_page))
 
@@ -211,6 +212,7 @@ def get_section_page_images(section):
         images.append({
             "url": BASE_URL + quote(path, safe="/:"),
             "page": page,
+            "source_file": source_file,
             "section": section.get("section", "")
         })
 
