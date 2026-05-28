@@ -4,38 +4,38 @@ import re
 import os
 
 PDFS = [
-    "L2100 車床程式說明手冊.pdf",
-    "L2100車床中文維護手冊(全).pdf",
-    "L2100車床參數警報手冊.pdf"
+    {
+        "pdf": "L2100 車床程式說明手冊.pdf",
+        "type": "programming"
+    },
+    {
+        "pdf": "L2100車床中文維護手冊(全).pdf",
+        "type": "maintenance"
+    },
+    {
+        "pdf": "L2100車床參數警報手冊.pdf",
+        "type": "parameter"
+    }
 ]
-
-OUT = "section_map.json"
-
-
-def clean(t):
-    t = re.sub(r"\s+", " ", t)
-    return t.strip()
-
 
 all_sections = []
 
-for pdf in PDFS:
+for item in PDFS:
 
-    if not os.path.exists(pdf):
-        print("找不到：", pdf)
-        continue
+    pdf_path = item["pdf"]
+    manual_type = item["type"]
 
-    doc = fitz.open(pdf)
+    print("掃描：", pdf_path)
 
-    print("掃描：", pdf)
+    doc = fitz.open(pdf_path)
 
-    toc = doc.get_toc(simple=False)
+    toc = doc.get_toc()
 
-    for item in toc:
+    for i, row in enumerate(toc):
 
-        level = item[0]
-        title = clean(item[1])
-        page = item[2]
+        level = row[0]
+        title = row[1].strip()
+        page = row[2]
 
         if not title:
             continue
@@ -46,29 +46,30 @@ for pdf in PDFS:
             flags=re.IGNORECASE
         )
 
-        all_sections.append({
-            "source_file": os.path.basename(pdf),
+        section = {
+            "manual_type": manual_type,
+            "source_file": os.path.basename(pdf_path),
             "section": title,
             "codes": list(set(codes)),
-            "keywords": [title],
             "start_page": page,
             "end_page": page
-        })
+        }
 
-# 自動補 end_page
-for i in range(len(all_sections) - 1):
+        all_sections.append(section)
 
-    a = all_sections[i]
-    b = all_sections[i + 1]
+for i in range(len(all_sections)-1):
 
-    if a["source_file"] == b["source_file"]:
-        a["end_page"] = max(
-            a["start_page"],
-            b["start_page"] - 1
+    cur = all_sections[i]
+    nxt = all_sections[i+1]
+
+    if cur["source_file"] == nxt["source_file"]:
+        cur["end_page"] = max(
+            cur["start_page"],
+            nxt["start_page"] - 1
         )
 
-with open(OUT, "w", encoding="utf-8") as f:
+with open("section_map.json", "w", encoding="utf-8") as f:
     json.dump(all_sections, f, ensure_ascii=False, indent=2)
 
 print("完成")
-print("總章節：", len(all_sections))
+print("章節數：", len(all_sections))

@@ -1,162 +1,137 @@
 [
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "一、 G碼指令一覽表",
     "codes": [],
-    "keywords": [
-      "一、 G碼指令一覽表"
-    ],
     "start_page": 3,
     "end_page": 4
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "1.1 快速定位(G00)",
     "codes": [
       "G00"
     ],
-    "keywords": [
-      "1.1 快速定位(G00)"
-    ],
     "start_page": 5,
     "end_page": 5
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "1.2 直線插值(G01)",
     "codes": [
       "G01"
     ],
-    "keywords": [
-      "1.2 直線插值(G01)"
-    ],
     "start_page": 6,
     "end_page": 6
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
-    "section": "1.3 圓弧插值(G02/G03)",
+    "section": "1.3  圓弧插值(G02/G03)",
     "codes": [
       "G02",
       "G03"
-    ],
-    "keywords": [
-      "1.3 圓弧插值(G02/G03)"
     ],
     "start_page": 7,
     "end_page": 9
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
-    "section": "1.4 暫停(G04)",
+    "section": "1.4  暫停(G04)",
     "codes": [
       "G04"
-    ],
-    "keywords": [
-      "1.4 暫停(G04)"
     ],
     "start_page": 10,
     "end_page": 10
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
-    "section": "1.5 正確停止(G09)",
+    "section": "1.5  正確停止(G09)",
     "codes": [
       "G09"
-    ],
-    "keywords": [
-      "1.5 正確停止(G09)"
     ],
     "start_page": 11,
     "end_page": 11
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
-    "section": "1.6 資料輸入設定(G10)",
+    "section": "1.6  資料輸入設定(G10)",
     "codes": [
       "G10"
-    ],
-    "keywords": [
-      "1.6 資料輸入設定(G10)"
     ],
     "start_page": 12,
     "end_page": 16
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
-    "section": "1.7 英/公制單位設定(G20/G21)",
+    "section": "1.7  英/公制單位設定(G20/G21)",
     "codes": [
-      "G20",
-      "G21"
-    ],
-    "keywords": [
-      "1.7 英/公制單位設定(G20/G21)"
+      "G21",
+      "G20"
     ],
     "start_page": 17,
     "end_page": 17
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
-    "section": "1.8 刀具行程極限檢查(G22/G23)",
+    "section": "1.8  刀具行程極限檢查(G22/G23)",
     "codes": [
       "G22",
       "G23"
     ],
-    "keywords": [
-      "1.8 刀具行程極限檢查(G22/G23)"
-    ],
     "start_page": 17,
     "end_page": 17
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
-    "section": "1.9 原點復歸檢查 (G27)",
+    "section": "1.9  原點復歸檢查 (G27)",
     "codes": [
       "G27"
-    ],
-    "keywords": [
-      "1.9 原點復歸檢查 (G27)"
     ],
     "start_page": 18,
     "end_page": 18
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "1.10 第一參考點自動復歸 (G28)",
     "codes": [
       "G28"
     ],
-    "keywords": [
-      "1.10 第一參考點自動復歸 (G28)"
-    ],
     "start_page": 19,
     "end_page": 19
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "1.11 從參考點復歸 (G29)",
     "codes": [
       "G29"
     ],
-    "keywords": [
-      "1.11 從參考點復歸 (G29)"
-    ],
     "start_page": 19,
     "end_page": 19
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "1.12 第二、三、四參考點復歸 (G30)",
     "codes": [
       "G30"
     ],
-    "keywords": [
-      "1.12 第二、三、四參考點復歸 (G30)"
-    ],
     "start_page": 20,
     "end_page": 20
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "1.13 刀具半徑補正 (G40/G41/G42)",
     "codes": [
@@ -164,1793 +139,1458 @@
       "G42",
       "G40"
     ],
-    "keywords": [
-      "1.13 刀具半徑補正 (G40/G41/G42)"
-    ],
     "start_page": 21,
     "end_page": 24
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "1.14 座標系設定/最大轉速設定(G50)",
     "codes": [
       "G50"
     ],
-    "keywords": [
-      "1.14 座標系設定/最大轉速設定(G50)"
-    ],
     "start_page": 25,
     "end_page": 25
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "1.15 局部座標系設定(G52)",
     "codes": [
       "G52"
     ],
-    "keywords": [
-      "1.15 局部座標系設定(G52)"
-    ],
     "start_page": 25,
     "end_page": 25
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "1.16 機械座標定位(G53)",
     "codes": [
       "G53"
     ],
-    "keywords": [
-      "1.16 機械座標定位(G53)"
-    ],
     "start_page": 26,
     "end_page": 26
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "1.17 表面切削速度一定設定/取消(G96/G97)",
     "codes": [
       "G97",
       "G96"
     ],
-    "keywords": [
-      "1.17 表面切削速度一定設定/取消(G96/G97)"
-    ],
     "start_page": 26,
     "end_page": 26
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "1.18 每分鐘進給量、每轉進給量(G98/G99)",
     "codes": [
       "G99",
       "G98"
     ],
-    "keywords": [
-      "1.18 每分鐘進給量、每轉進給量(G98/G99)"
-    ],
     "start_page": 26,
     "end_page": 27
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "1.19 單一螺紋切削(G32)",
     "codes": [
       "G32"
     ],
-    "keywords": [
-      "1.19 單一螺紋切削(G32)"
-    ],
     "start_page": 28,
     "end_page": 33
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "1.20 單一可變導程螺紋切削(G34)",
     "codes": [
       "G34"
     ],
-    "keywords": [
-      "1.20 單一可變導程螺紋切削(G34)"
-    ],
     "start_page": 34,
     "end_page": 35
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "1.21 循環精切削(G70)",
     "codes": [
       "G70"
     ],
-    "keywords": [
-      "1.21 循環精切削(G70)"
-    ],
     "start_page": 36,
     "end_page": 37
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "1.22 橫向粗切削循環(G71)",
     "codes": [
       "G71"
     ],
-    "keywords": [
-      "1.22 橫向粗切削循環(G71)"
-    ],
     "start_page": 38,
     "end_page": 42
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "1.23 縱向粗切削循環(G72)",
     "codes": [
       "G72"
     ],
-    "keywords": [
-      "1.23 縱向粗切削循環(G72)"
-    ],
     "start_page": 43,
     "end_page": 47
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "1.24 鍛胚粗切削循環(G73)",
     "codes": [
       "G73"
     ],
-    "keywords": [
-      "1.24 鍛胚粗切削循環(G73)"
-    ],
     "start_page": 48,
     "end_page": 52
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "1.25 端面啄式切削循環(G74)",
     "codes": [
       "G74"
     ],
-    "keywords": [
-      "1.25 端面啄式切削循環(G74)"
-    ],
     "start_page": 53,
     "end_page": 55
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "1.26 徑向啄式切削循環(G75)",
     "codes": [
       "G75"
     ],
-    "keywords": [
-      "1.26 徑向啄式切削循環(G75)"
-    ],
     "start_page": 56,
     "end_page": 58
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "1.27 複合式螺紋切削循環(G76)",
     "codes": [
       "G76"
     ],
-    "keywords": [
-      "1.27 複合式螺紋切削循環(G76)"
-    ],
     "start_page": 59,
     "end_page": 62
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "1.28 橫向固定切削循環(G90)",
     "codes": [
       "G90"
     ],
-    "keywords": [
-      "1.28 橫向固定切削循環(G90)"
-    ],
     "start_page": 63,
     "end_page": 65
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "1.29 螺紋切削循環(G92)",
     "codes": [
       "G92"
     ],
-    "keywords": [
-      "1.29 螺紋切削循環(G92)"
-    ],
     "start_page": 66,
     "end_page": 70
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "1.30 縱向固定切削循環(G94)",
     "codes": [
       "G94"
     ],
-    "keywords": [
-      "1.30 縱向固定切削循環(G94)"
-    ],
     "start_page": 71,
     "end_page": 75
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "1.31 單一型端面鑽孔固定循環(G83)",
     "codes": [
       "G83"
     ],
-    "keywords": [
-      "1.31 單一型端面鑽孔固定循環(G83)"
-    ],
     "start_page": 76,
     "end_page": 78
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "1.32 單一型端面剛性攻牙固定循環(G84)",
     "codes": [
       "G84"
     ],
-    "keywords": [
-      "1.32 單一型端面剛性攻牙固定循環(G84)"
-    ],
     "start_page": 79,
     "end_page": 80
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "1.33 單一型端面搪削固定循環(G85)",
     "codes": [
       "G85"
     ],
-    "keywords": [
-      "1.33 單一型端面搪削固定循環(G85)"
-    ],
     "start_page": 81,
     "end_page": 82
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "1.34 單一型徑向鑽孔固定循環(G87)",
     "codes": [
       "G87"
     ],
-    "keywords": [
-      "1.34 單一型徑向鑽孔固定循環(G87)"
-    ],
     "start_page": 83,
     "end_page": 85
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "1.35 單一型徑向剛性攻牙固定循環(G88)",
     "codes": [
       "G88"
     ],
-    "keywords": [
-      "1.35 單一型徑向剛性攻牙固定循環(G88)"
-    ],
     "start_page": 86,
     "end_page": 88
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "1.36 單一型徑向搪削固定循環(G89)",
     "codes": [
       "G89"
     ],
-    "keywords": [
-      "1.36 單一型徑向搪削固定循環(G89)"
-    ],
     "start_page": 89,
     "end_page": 89
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "1.37 單一巨程式呼叫(G65)",
     "codes": [
       "G65"
     ],
-    "keywords": [
-      "1.37 單一巨程式呼叫(G65)"
-    ],
     "start_page": 90,
     "end_page": 91
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "1.38 模式巨程式呼叫(G66)與取消(G67)",
     "codes": [
-      "G67",
-      "G66"
-    ],
-    "keywords": [
-      "1.38 模式巨程式呼叫(G66)與取消(G67)"
+      "G66",
+      "G67"
     ],
     "start_page": 92,
     "end_page": 92
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "1.39 正確停止模式(G61)與一般切削模式(G64)",
     "codes": [
-      "G64",
-      "G61"
-    ],
-    "keywords": [
-      "1.39 正確停止模式(G61)與一般切削模式(G64)"
+      "G61",
+      "G64"
     ],
     "start_page": 93,
     "end_page": 94
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "1.40 工作座標系統選擇(G54~G59)",
     "codes": [
       "G59",
       "G54"
     ],
-    "keywords": [
-      "1.40 工作座標系統選擇(G54~G59)"
-    ],
     "start_page": 95,
     "end_page": 95
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "1.41 回原點功能(G81)",
     "codes": [
       "G81"
     ],
-    "keywords": [
-      "1.41 回原點功能(G81)"
-    ],
     "start_page": 96,
     "end_page": 96
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "1.42 圓柱座標插值(G107orG07.1)",
     "codes": [
-      "G107",
-      "G07.1"
-    ],
-    "keywords": [
-      "1.42 圓柱座標插值(G107orG07.1)"
+      "G07.1",
+      "G107"
     ],
     "start_page": 97,
     "end_page": 98
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "1.43 端面座標插值(G112orG12.1)",
     "codes": [
-      "G112",
-      "G12.1"
-    ],
-    "keywords": [
-      "1.43 端面座標插值(G112orG12.1)"
+      "G12.1",
+      "G112"
     ],
     "start_page": 99,
     "end_page": 102
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "1.44 手動(G46)與自動(G47)之刀具量測巨集程式",
     "codes": [
       "G47",
       "G46"
     ],
-    "keywords": [
-      "1.44 手動(G46)與自動(G47)之刀具量測巨集程式"
-    ],
     "start_page": 103,
     "end_page": 105
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "1.45 XY、ZX、YZ平面選擇(G17~G19)",
     "codes": [
-      "G19",
-      "G17"
-    ],
-    "keywords": [
-      "1.45 XY、ZX、YZ平面選擇(G17~G19)"
+      "G17",
+      "G19"
     ],
     "start_page": 106,
     "end_page": 106
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "1.46 主軸轉速檢查(G25/G26)",
     "codes": [
       "G25",
       "G26"
     ],
-    "keywords": [
-      "1.46 主軸轉速檢查(G25/G26)"
-    ],
     "start_page": 107,
     "end_page": 107
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "1.47 略過機能(G31)",
     "codes": [
       "G31"
     ],
-    "keywords": [
-      "1.47 略過機能(G31)"
-    ],
     "start_page": 107,
     "end_page": 108
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "1.48 X軸與Z軸自動刀具補正(G36、G37)",
     "codes": [
-      "G37",
-      "G36"
-    ],
-    "keywords": [
-      "1.48 X軸與Z軸自動刀具補正(G36、G37)"
+      "G36",
+      "G37"
     ],
     "start_page": 109,
     "end_page": 111
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "二、 M輔助機能",
     "codes": [],
-    "keywords": [
-      "二、 M輔助機能"
-    ],
     "start_page": 112,
     "end_page": 112
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "2.1 一般M機能表：",
     "codes": [],
-    "keywords": [
-      "2.1 一般M機能表："
-    ],
     "start_page": 112,
     "end_page": 114
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
-    "section": "2.2 副主軸M輔助機能：",
+    "section": "2.2  副主軸M輔助機能：",
     "codes": [],
-    "keywords": [
-      "2.2 副主軸M輔助機能："
-    ],
     "start_page": 115,
     "end_page": 115
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
-    "section": "2.3 M指令介紹：",
+    "section": "2.3  M指令介紹：",
     "codes": [],
-    "keywords": [
-      "2.3 M指令介紹："
-    ],
     "start_page": 116,
     "end_page": 118
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "三、 Macro機能說明",
     "codes": [],
-    "keywords": [
-      "三、 Macro機能說明"
-    ],
     "start_page": 119,
     "end_page": 119
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
-    "section": "3.1 Macro簡介:",
+    "section": "3.1  Macro簡介:",
     "codes": [],
-    "keywords": [
-      "3.1 Macro簡介:"
-    ],
     "start_page": 119,
     "end_page": 119
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
-    "section": "3.2 巨集程式呼叫-單一巨集、模式巨集",
+    "section": "3.2  巨集程式呼叫-單一巨集、模式巨集",
     "codes": [],
-    "keywords": [
-      "3.2 巨集程式呼叫-單一巨集、模式巨集"
-    ],
     "start_page": 119,
     "end_page": 119
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
-    "section": "3.3 循環切削呼叫",
+    "section": "3.3  循環切削呼叫",
     "codes": [],
-    "keywords": [
-      "3.3 循環切削呼叫"
-    ],
     "start_page": 119,
     "end_page": 119
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
-    "section": "3.4 M碼呼叫",
+    "section": "3.4  M碼呼叫",
     "codes": [],
-    "keywords": [
-      "3.4 M碼呼叫"
-    ],
     "start_page": 119,
     "end_page": 119
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
-    "section": "3.5 G65、G66呼叫與一般M98副程式呼之差異",
+    "section": "3.5  G65、G66呼叫與一般M98副程式呼之差異",
     "codes": [
-      "G65",
       "G66",
-      "M98"
-    ],
-    "keywords": [
-      "3.5 G65、G66呼叫與一般M98副程式呼之差異"
+      "M98",
+      "G65"
     ],
     "start_page": 120,
     "end_page": 120
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
-    "section": "3.6 變數介紹",
+    "section": "3.6  變數介紹",
     "codes": [],
-    "keywords": [
-      "3.6 變數介紹"
-    ],
     "start_page": 120,
     "end_page": 124
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
-    "section": "3.7 邏輯命令",
+    "section": "3.7  邏輯命令",
     "codes": [],
-    "keywords": [
-      "3.7 邏輯命令"
-    ],
     "start_page": 125,
     "end_page": 126
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
-    "section": "3.8 關係命令",
+    "section": "3.8  關係命令",
     "codes": [],
-    "keywords": [
-      "3.8 關係命令"
-    ],
     "start_page": 127,
     "end_page": 127
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
-    "section": "3.9 控制命令",
+    "section": "3.9  控制命令",
     "codes": [],
-    "keywords": [
-      "3.9 控制命令"
-    ],
     "start_page": 127,
     "end_page": 128
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "3.10 函數命令",
     "codes": [],
-    "keywords": [
-      "3.10 函數命令"
-    ],
     "start_page": 129,
     "end_page": 129
   },
   {
+    "manual_type": "programming",
     "source_file": "L2100 車床程式說明手冊.pdf",
     "section": "3.11 註解",
     "codes": [],
-    "keywords": [
-      "3.11 註解"
-    ],
     "start_page": 130,
     "end_page": 130
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
     "section": "1. 軟體維護",
     "codes": [],
-    "keywords": [
-      "1. 軟體維護"
-    ],
     "start_page": 8,
     "end_page": 8
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
-    "section": "1.1. GMC版本系統目錄內容說明",
+    "section": "1.1.  GMC版本系統目錄內容說明",
     "codes": [],
-    "keywords": [
-      "1.1. GMC版本系統目錄內容說明"
-    ],
     "start_page": 9,
     "end_page": 9
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
-    "section": "1.1.1. [L2100_1] 資料夾內容",
+    "section": "1.1.1.  [L2100_1] 資料夾內容",
     "codes": [],
-    "keywords": [
-      "1.1.1. [L2100_1] 資料夾內容"
-    ],
     "start_page": 10,
     "end_page": 10
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
-    "section": "1.1.2. [HMIAPP] 資料夾內容",
+    "section": "1.1.2.  [HMIAPP] 資料夾內容",
     "codes": [],
-    "keywords": [
-      "1.1.2. [HMIAPP] 資料夾內容"
-    ],
     "start_page": 11,
     "end_page": 11
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
-    "section": "1.1.3. 更新說明",
+    "section": "1.1.3.  更新說明",
     "codes": [],
-    "keywords": [
-      "1.1.3. 更新說明"
-    ],
     "start_page": 12,
     "end_page": 12
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
-    "section": "1.2. EtherCAT版本說明",
+    "section": "1.2.  EtherCAT版本說明",
     "codes": [
       "EtherCAT"
-    ],
-    "keywords": [
-      "1.2. EtherCAT版本說明"
     ],
     "start_page": 13,
     "end_page": 14
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
-    "section": "1.2.1. EtherCAT版本系統目錄內容說明",
+    "section": "1.2.1.  EtherCAT版本系統目錄內容說明",
     "codes": [
       "EtherCAT"
-    ],
-    "keywords": [
-      "1.2.1. EtherCAT版本系統目錄內容說明"
     ],
     "start_page": 15,
     "end_page": 15
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
-    "section": "1.2.2. [L2100_1] 資料夾內容",
+    "section": "1.2.2.  [L2100_1] 資料夾內容",
     "codes": [],
-    "keywords": [
-      "1.2.2. [L2100_1] 資料夾內容"
-    ],
     "start_page": 16,
     "end_page": 16
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
-    "section": "1.2.3. [NewHMIAPP] 資料夾內容",
+    "section": "1.2.3.  [NewHMIAPP] 資料夾內容",
     "codes": [],
-    "keywords": [
-      "1.2.3. [NewHMIAPP] 資料夾內容"
-    ],
     "start_page": 17,
     "end_page": 17
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
-    "section": "1.2.4. 更新說明",
+    "section": "1.2.4.  更新說明",
     "codes": [],
-    "keywords": [
-      "1.2.4. 更新說明"
-    ],
     "start_page": 18,
     "end_page": 18
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
     "section": "2. 硬體架構",
     "codes": [],
-    "keywords": [
-      "2. 硬體架構"
-    ],
     "start_page": 19,
     "end_page": 19
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
     "section": "2.1. GMC硬體架構",
     "codes": [],
-    "keywords": [
-      "2.1. GMC硬體架構"
-    ],
     "start_page": 19,
     "end_page": 19
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
     "section": "GMC700系統架構",
     "codes": [],
-    "keywords": [
-      "GMC700系統架構"
-    ],
     "start_page": 19,
     "end_page": 19
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
     "section": "GMC700硬體規格",
     "codes": [],
-    "keywords": [
-      "GMC700硬體規格"
-    ],
     "start_page": 20,
     "end_page": 20
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
     "section": "GMC800系統架構",
     "codes": [],
-    "keywords": [
-      "GMC800系統架構"
-    ],
     "start_page": 21,
     "end_page": 21
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
     "section": "GMC800硬體規格",
     "codes": [],
-    "keywords": [
-      "GMC800硬體規格"
-    ],
     "start_page": 22,
     "end_page": 22
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
-    "section": "2.2. Ethercat 硬體架構",
+    "section": "2.2.  Ethercat 硬體架構",
     "codes": [
       "Ethercat"
-    ],
-    "keywords": [
-      "2.2. Ethercat 硬體架構"
     ],
     "start_page": 23,
     "end_page": 23
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
-    "section": "2.3. 控制軸卡",
+    "section": "2.3.  控制軸卡",
     "codes": [],
-    "keywords": [
-      "2.3. 控制軸卡"
-    ],
     "start_page": 24,
     "end_page": 24
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
     "section": "GMC700介面說明",
     "codes": [],
-    "keywords": [
-      "GMC700介面說明"
-    ],
     "start_page": 24,
     "end_page": 24
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
     "section": "連接器腳位定義",
     "codes": [],
-    "keywords": [
-      "連接器腳位定義"
-    ],
     "start_page": 25,
     "end_page": 25
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
     "section": "CN1:1-4軸控制訊號連接埠",
     "codes": [],
-    "keywords": [
-      "CN1:1-4軸控制訊號連接埠"
-    ],
     "start_page": 25,
     "end_page": 25
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
     "section": "CN2:第一組Salve I/O擴充卡連接埠",
     "codes": [],
-    "keywords": [
-      "CN2:第一組Salve I/O擴充卡連接埠"
-    ],
     "start_page": 26,
     "end_page": 26
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
     "section": "CN3:第二組Salve I/O擴充卡連接埠",
     "codes": [],
-    "keywords": [
-      "CN3:第二組Salve I/O擴充卡連接埠"
-    ],
     "start_page": 26,
     "end_page": 26
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
     "section": "CN4:5-6軸控制訊號連接埠",
     "codes": [],
-    "keywords": [
-      "CN4:5-6軸控制訊號連接埠"
-    ],
     "start_page": 27,
     "end_page": 27
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
     "section": "GMC800介面說明(使用PANASONIC全數位伺服)",
     "codes": [],
-    "keywords": [
-      "GMC800介面說明(使用PANASONIC全數位伺服)"
-    ],
     "start_page": 28,
     "end_page": 28
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
     "section": "連接器腳位定義",
     "codes": [],
-    "keywords": [
-      "連接器腳位定義"
-    ],
     "start_page": 29,
     "end_page": 29
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
     "section": "CN1: 泛用伺服控制訊號連接埠",
     "codes": [],
-    "keywords": [
-      "CN1: 泛用伺服控制訊號連接埠"
-    ],
     "start_page": 29,
     "end_page": 29
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
     "section": "CN2:第一組Salve I/O擴充卡連接埠",
     "codes": [],
-    "keywords": [
-      "CN2:第一組Salve I/O擴充卡連接埠"
-    ],
     "start_page": 29,
     "end_page": 29
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
     "section": "CN3:第二組Salve I/O擴充卡連接埠",
     "codes": [],
-    "keywords": [
-      "CN3:第二組Salve I/O擴充卡連接埠"
-    ],
     "start_page": 30,
     "end_page": 30
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
     "section": "CN10: 硬體訊號控制訊號連接埠",
     "codes": [],
-    "keywords": [
-      "CN10: 硬體訊號控制訊號連接埠"
-    ],
     "start_page": 30,
     "end_page": 30
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
     "section": "2.4. Slave I/O",
     "codes": [],
-    "keywords": [
-      "2.4. Slave I/O"
-    ],
     "start_page": 31,
     "end_page": 31
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
     "section": "2.4.1. Slave I/O 介面說明",
     "codes": [],
-    "keywords": [
-      "2.4.1. Slave I/O 介面說明"
-    ],
     "start_page": 31,
     "end_page": 31
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
     "section": "連接器腳位定義",
     "codes": [],
-    "keywords": [
-      "連接器腳位定義"
-    ],
     "start_page": 32,
     "end_page": 32
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
     "section": "CN1:Remote I/O控制連接埠",
     "codes": [],
-    "keywords": [
-      "CN1:Remote I/O控制連接埠"
-    ],
     "start_page": 32,
     "end_page": 32
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
     "section": "JP1:+24V直流電源輸入",
     "codes": [],
-    "keywords": [
-      "JP1:+24V直流電源輸入"
-    ],
     "start_page": 32,
     "end_page": 32
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
     "section": "S2:Salve I/O Base Address設定開關",
     "codes": [],
-    "keywords": [
-      "S2:Salve I/O Base Address設定開關"
-    ],
     "start_page": 32,
     "end_page": 32
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
     "section": "SLAVE1 J1~J4: I/O接點連接埠",
     "codes": [],
-    "keywords": [
-      "SLAVE1 J1~J4: I/O接點連接埠"
-    ],
     "start_page": 33,
     "end_page": 33
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
     "section": "SLAVE2 J1~J4: I/O接點連接埠",
     "codes": [],
-    "keywords": [
-      "SLAVE2 J1~J4: I/O接點連接埠"
-    ],
     "start_page": 34,
     "end_page": 34
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
-    "section": "2.4.2. EIO4832 I/O 介面說明",
+    "section": "2.4.2.  EIO4832 I/O 介面說明",
     "codes": [],
-    "keywords": [
-      "2.4.2. EIO4832 I/O 介面說明"
-    ],
     "start_page": 35,
     "end_page": 35
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
     "section": "連接器腳位定義",
     "codes": [],
-    "keywords": [
-      "連接器腳位定義"
-    ],
     "start_page": 36,
     "end_page": 39
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
-    "section": "2.4.3. EIO4832 LED燈號說明",
+    "section": "2.4.3.  EIO4832 LED燈號說明",
     "codes": [],
-    "keywords": [
-      "2.4.3. EIO4832 LED燈號說明"
-    ],
     "start_page": 40,
     "end_page": 41
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
     "section": "LED 燈指示說明",
     "codes": [],
-    "keywords": [
-      "LED 燈指示說明"
-    ],
     "start_page": 42,
     "end_page": 42
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
-    "section": "2.5. 機構尺寸",
+    "section": "2.5.  機構尺寸",
     "codes": [],
-    "keywords": [
-      "2.5. 機構尺寸"
-    ],
     "start_page": 43,
     "end_page": 47
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
     "section": "3. 電氣維護",
     "codes": [],
-    "keywords": [
-      "3. 電氣維護"
-    ],
     "start_page": 48,
     "end_page": 48
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
-    "section": "3.1. C,S Bits和暫存器",
+    "section": "3.1.  C,S Bits和暫存器",
     "codes": [],
-    "keywords": [
-      "3.1. C,S Bits和暫存器"
-    ],
     "start_page": 48,
     "end_page": 48
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
     "section": "3.1.1. C BITS定義",
     "codes": [],
-    "keywords": [
-      "3.1.1. C BITS定義"
-    ],
     "start_page": 48,
     "end_page": 57
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
-    "section": "3.1.2. S BITS定義",
+    "section": "3.1.2.  S BITS定義",
     "codes": [],
-    "keywords": [
-      "3.1.2. S BITS定義"
-    ],
     "start_page": 58,
     "end_page": 67
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
-    "section": "3.1.3. R暫存器",
+    "section": "3.1.3.  R暫存器",
     "codes": [],
-    "keywords": [
-      "3.1.3. R暫存器"
-    ],
     "start_page": 68,
     "end_page": 69
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
-    "section": "3.1.4. C/S BITS及R暫存器說明",
+    "section": "3.1.4.  C/S BITS及R暫存器說明",
     "codes": [],
-    "keywords": [
-      "3.1.4. C/S BITS及R暫存器說明"
-    ],
     "start_page": 70,
     "end_page": 70
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
     "section": "3.1.4.1. C BITS功能說明",
     "codes": [],
-    "keywords": [
-      "3.1.4.1. C BITS功能說明"
-    ],
     "start_page": 70,
     "end_page": 80
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
-    "section": "3.1.4.2. S BITS功能說明",
+    "section": "3.1.4.2.  S BITS功能說明",
     "codes": [],
-    "keywords": [
-      "3.1.4.2. S BITS功能說明"
-    ],
     "start_page": 81,
     "end_page": 87
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
-    "section": "3.1.4.3. R暫存器功能說明",
+    "section": "3.1.4.3.  R暫存器功能說明",
     "codes": [],
-    "keywords": [
-      "3.1.4.3. R暫存器功能說明"
-    ],
     "start_page": 88,
     "end_page": 91
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
-    "section": "3.2. 系統警報訊息",
+    "section": "3.2.  系統警報訊息",
     "codes": [],
-    "keywords": [
-      "3.2. 系統警報訊息"
-    ],
     "start_page": 92,
     "end_page": 93
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
-    "section": "3.2.1. HMI人機介面警報",
+    "section": "3.2.1.  HMI人機介面警報",
     "codes": [],
-    "keywords": [
-      "3.2.1. HMI人機介面警報"
-    ],
     "start_page": 94,
     "end_page": 94
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
-    "section": "3.2.2. INT解譯警報",
+    "section": "3.2.2.  INT解譯警報",
     "codes": [],
-    "keywords": [
-      "3.2.2. INT解譯警報"
-    ],
     "start_page": 95,
     "end_page": 110
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
-    "section": "3.2.3. MOT運動模組警報",
+    "section": "3.2.3.  MOT運動模組警報",
     "codes": [],
-    "keywords": [
-      "3.2.3. MOT運動模組警報"
-    ],
     "start_page": 111,
     "end_page": 132
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
-    "section": "3.2.4. OP 操作相關警報",
+    "section": "3.2.4.  OP 操作相關警報",
     "codes": [],
-    "keywords": [
-      "3.2.4. OP 操作相關警報"
-    ],
     "start_page": 133,
     "end_page": 135
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
-    "section": "3.2.5. RTEX通訊型Panasonic A5N警報",
+    "section": "3.2.5.  RTEX通訊型Panasonic A5N警報",
     "codes": [],
-    "keywords": [
-      "3.2.5. RTEX通訊型Panasonic A5N警報"
-    ],
     "start_page": 136,
     "end_page": 178
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
-    "section": "3.2.6. EtherCAT通訊相關警報",
+    "section": "3.2.6.  EtherCAT通訊相關警報",
     "codes": [
       "EtherCAT"
-    ],
-    "keywords": [
-      "3.2.6. EtherCAT通訊相關警報"
     ],
     "start_page": 179,
     "end_page": 180
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
     "section": "3.2.7. EtherCAT通訊型Panasonic A5B警報",
     "codes": [
       "EtherCAT"
     ],
-    "keywords": [
-      "3.2.7. EtherCAT通訊型Panasonic A5B警報"
-    ],
     "start_page": 181,
     "end_page": 198
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
-    "section": "3.2.8. EtherCAT通訊型Delta ASDA-A2-E警報",
+    "section": "3.2.8.  EtherCAT通訊型Delta ASDA-A2-E警報",
     "codes": [
       "EtherCAT"
-    ],
-    "keywords": [
-      "3.2.8. EtherCAT通訊型Delta ASDA-A2-E警報"
     ],
     "start_page": 199,
     "end_page": 209
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
-    "section": "3.2.9. EtherCAT通訊型JPS警報",
+    "section": "3.2.9.  EtherCAT通訊型JPS警報",
     "codes": [
       "EtherCAT"
-    ],
-    "keywords": [
-      "3.2.9. EtherCAT通訊型JPS警報"
     ],
     "start_page": 210,
     "end_page": 211
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
-    "section": "3.2.10. EtherCAT通訊型TDE警報",
+    "section": "3.2.10.  EtherCAT通訊型TDE警報",
     "codes": [
       "EtherCAT"
-    ],
-    "keywords": [
-      "3.2.10. EtherCAT通訊型TDE警報"
     ],
     "start_page": 212,
     "end_page": 222
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
-    "section": "3.2.11. EtherCAT通訊型HIWIN D2警報",
+    "section": "3.2.11.  EtherCAT通訊型HIWIN D2警報",
     "codes": [
       "EtherCAT"
-    ],
-    "keywords": [
-      "3.2.11. EtherCAT通訊型HIWIN D2警報"
     ],
     "start_page": 223,
     "end_page": 225
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
-    "section": "3.3. M輔助機能",
+    "section": "3.3.  M輔助機能",
     "codes": [],
-    "keywords": [
-      "3.3. M輔助機能"
-    ],
     "start_page": 226,
     "end_page": 226
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
     "section": "3.3.1. 一般M機能表",
     "codes": [],
-    "keywords": [
-      "3.3.1. 一般M機能表"
-    ],
     "start_page": 226,
     "end_page": 228
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
-    "section": "3.3.2. 副主軸M輔助機能",
+    "section": "3.3.2.  副主軸M輔助機能",
     "codes": [],
-    "keywords": [
-      "3.3.2. 副主軸M輔助機能"
-    ],
     "start_page": 229,
     "end_page": 229
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
-    "section": "3.3.3. 雙主軸正、副主軸M機能切換真值表",
+    "section": "3.3.3.  雙主軸正、副主軸M機能切換真值表",
     "codes": [],
-    "keywords": [
-      "3.3.3. 雙主軸正、副主軸M機能切換真值表"
-    ],
     "start_page": 230,
     "end_page": 230
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
-    "section": "3.4. 輸入、輸出點位址和功能",
+    "section": "3.4.   輸入、輸出點位址和功能",
     "codes": [],
-    "keywords": [
-      "3.4. 輸入、輸出點位址和功能"
-    ],
     "start_page": 231,
     "end_page": 242
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
-    "section": "3.5. MLC警告訊息說明",
+    "section": "3.5.  MLC警告訊息說明",
     "codes": [],
-    "keywords": [
-      "3.5. MLC警告訊息說明"
-    ],
     "start_page": 243,
     "end_page": 254
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
-    "section": "3.6. 電路圖",
+    "section": "3.6.  電路圖",
     "codes": [],
-    "keywords": [
-      "3.6. 電路圖"
-    ],
     "start_page": 255,
     "end_page": 255
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
     "section": "3.7. 操作面板",
     "codes": [],
-    "keywords": [
-      "3.7. 操作面板"
-    ],
     "start_page": 255,
     "end_page": 255
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
     "section": "3.7.1. 操作面板零件表",
     "codes": [],
-    "keywords": [
-      "3.7.1. 操作面板零件表"
-    ],
     "start_page": 255,
     "end_page": 255
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
-    "section": "3.7.2. 操作面板位置圖",
+    "section": "3.7.2.  操作面板位置圖",
     "codes": [],
-    "keywords": [
-      "3.7.2. 操作面板位置圖"
-    ],
     "start_page": 256,
     "end_page": 256
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
-    "section": "3.7.3. 操作面板線路圖",
+    "section": "3.7.3.  操作面板線路圖",
     "codes": [],
-    "keywords": [
-      "3.7.3. 操作面板線路圖"
-    ],
     "start_page": 257,
     "end_page": 258
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
-    "section": "3.8. 轉接板",
+    "section": "3.8.  轉接板",
     "codes": [],
-    "keywords": [
-      "3.8. 轉接板"
-    ],
     "start_page": 259,
     "end_page": 259
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
     "section": "3.8.1. 轉接板零件表",
     "codes": [],
-    "keywords": [
-      "3.8.1. 轉接板零件表"
-    ],
     "start_page": 259,
     "end_page": 259
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
-    "section": "3.8.2. 轉接板零件位置圖",
+    "section": "3.8.2.  轉接板零件位置圖",
     "codes": [],
-    "keywords": [
-      "3.8.2. 轉接板零件位置圖"
-    ],
     "start_page": 260,
     "end_page": 260
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
-    "section": "3.8.3. 轉接板線路圖",
+    "section": "3.8.3.  轉接板線路圖",
     "codes": [],
-    "keywords": [
-      "3.8.3. 轉接板線路圖"
-    ],
     "start_page": 261,
     "end_page": 265
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
     "section": "4. 故障檢測與排除",
     "codes": [],
-    "keywords": [
-      "4. 故障檢測與排除"
-    ],
     "start_page": 266,
     "end_page": 266
   },
   {
+    "manual_type": "maintenance",
     "source_file": "L2100車床中文維護手冊(全).pdf",
     "section": "4.1. 案例",
     "codes": [],
-    "keywords": [
-      "4.1. 案例"
-    ],
     "start_page": 266,
     "end_page": 266
   },
   {
+    "manual_type": "parameter",
     "source_file": "L2100車床參數警報手冊.pdf",
     "section": "1. 系統參數",
     "codes": [],
-    "keywords": [
-      "1. 系統參數"
-    ],
     "start_page": 3,
     "end_page": 3
   },
   {
+    "manual_type": "parameter",
     "source_file": "L2100車床參數警報手冊.pdf",
     "section": "1.1. 系統參數",
     "codes": [],
-    "keywords": [
-      "1.1. 系統參數"
-    ],
     "start_page": 4,
     "end_page": 221
   },
   {
+    "manual_type": "parameter",
     "source_file": "L2100車床參數警報手冊.pdf",
-    "section": "1.2. C軸參數設定",
+    "section": "1.2.  C軸參數設定",
     "codes": [],
-    "keywords": [
-      "1.2. C軸參數設定"
-    ],
     "start_page": 222,
     "end_page": 222
   },
   {
+    "manual_type": "parameter",
     "source_file": "L2100車床參數警報手冊.pdf",
     "section": "2. 參數建議設定說明",
     "codes": [],
-    "keywords": [
-      "2. 參數建議設定說明"
-    ],
     "start_page": 223,
     "end_page": 223
   },
   {
+    "manual_type": "parameter",
     "source_file": "L2100車床參數警報手冊.pdf",
     "section": "2.1. 車床系統參數設定建議",
     "codes": [],
-    "keywords": [
-      "2.1. 車床系統參數設定建議"
-    ],
     "start_page": 223,
     "end_page": 237
   },
   {
+    "manual_type": "parameter",
     "source_file": "L2100車床參數警報手冊.pdf",
-    "section": "2.2. 車銑系統參數設定建議",
+    "section": "2.2.  車銑系統參數設定建議",
     "codes": [],
-    "keywords": [
-      "2.2. 車銑系統參數設定建議"
-    ],
     "start_page": 238,
     "end_page": 240
   },
   {
+    "manual_type": "parameter",
     "source_file": "L2100車床參數警報手冊.pdf",
     "section": "2.3. 製造者選項參數設定建議",
     "codes": [],
-    "keywords": [
-      "2.3. 製造者選項參數設定建議"
-    ],
     "start_page": 241,
     "end_page": 241
   },
   {
+    "manual_type": "parameter",
     "source_file": "L2100車床參數警報手冊.pdf",
     "section": "2.4. 操作者選項參數設定建議",
     "codes": [],
-    "keywords": [
-      "2.4. 操作者選項參數設定建議"
-    ],
     "start_page": 242,
     "end_page": 242
   },
   {
+    "manual_type": "parameter",
     "source_file": "L2100車床參數警報手冊.pdf",
     "section": "3. 通訊參數設定",
     "codes": [],
-    "keywords": [
-      "3. 通訊參數設定"
-    ],
     "start_page": 243,
     "end_page": 243
   },
   {
+    "manual_type": "parameter",
     "source_file": "L2100車床參數警報手冊.pdf",
     "section": "3.1. JPS F903版本通訊參數",
     "codes": [],
-    "keywords": [
-      "3.1. JPS F903版本通訊參數"
-    ],
     "start_page": 244,
     "end_page": 244
   },
   {
+    "manual_type": "parameter",
     "source_file": "L2100車床參數警報手冊.pdf",
     "section": "3.2. TDE EtherCAT版本通訊參數",
     "codes": [
       "EtherCAT"
     ],
-    "keywords": [
-      "3.2. TDE EtherCAT版本通訊參數"
-    ],
     "start_page": 245,
     "end_page": 245
   },
   {
+    "manual_type": "parameter",
     "source_file": "L2100車床參數警報手冊.pdf",
     "section": "4. 驅動器初始化設定",
     "codes": [],
-    "keywords": [
-      "4. 驅動器初始化設定"
-    ],
     "start_page": 246,
     "end_page": 246
   },
   {
+    "manual_type": "parameter",
     "source_file": "L2100車床參數警報手冊.pdf",
     "section": "4.1. Panasonic A5N用於GMC800參數設定",
     "codes": [],
-    "keywords": [
-      "4.1. Panasonic A5N用於GMC800參數設定"
-    ],
     "start_page": 246,
     "end_page": 246
   },
   {
+    "manual_type": "parameter",
     "source_file": "L2100車床參數警報手冊.pdf",
-    "section": "4.2. Panasonic A5B用於ETHERCAT參數設定",
+    "section": "4.2.  Panasonic A5B用於ETHERCAT參數設定",
     "codes": [
       "ETHERCAT"
-    ],
-    "keywords": [
-      "4.2. Panasonic A5B用於ETHERCAT參數設定"
     ],
     "start_page": 247,
     "end_page": 247
   },
   {
+    "manual_type": "parameter",
     "source_file": "L2100車床參數警報手冊.pdf",
-    "section": "4.3. 台達ASDA A2-E用於EtherCAT參數設定",
+    "section": "4.3.  台達ASDA A2-E用於EtherCAT參數設定",
     "codes": [
       "EtherCAT"
-    ],
-    "keywords": [
-      "4.3. 台達ASDA A2-E用於EtherCAT參數設定"
     ],
     "start_page": 248,
     "end_page": 248
   },
   {
+    "manual_type": "parameter",
     "source_file": "L2100車床參數警報手冊.pdf",
-    "section": "4.4. 台達驅動器VFD-VE用於GMC800參數設定",
+    "section": "4.4.  台達驅動器VFD-VE用於GMC800參數設定",
     "codes": [],
-    "keywords": [
-      "4.4. 台達驅動器VFD-VE用於GMC800參數設定"
-    ],
     "start_page": 249,
     "end_page": 249
   },
   {
+    "manual_type": "parameter",
     "source_file": "L2100車床參數警報手冊.pdf",
     "section": "4.5. 安川驅動器Σ-V用於EtherCAT參數設定",
     "codes": [
       "EtherCAT"
     ],
-    "keywords": [
-      "4.5. 安川驅動器Σ-V用於EtherCAT參數設定"
-    ],
     "start_page": 250,
     "end_page": 250
   },
   {
+    "manual_type": "parameter",
     "source_file": "L2100車床參數警報手冊.pdf",
     "section": "4.6. 正頻JPS驅動器用於EtherCAT參數設定",
     "codes": [
       "EtherCAT"
     ],
-    "keywords": [
-      "4.6. 正頻JPS驅動器用於EtherCAT參數設定"
-    ],
     "start_page": 251,
     "end_page": 251
   },
   {
+    "manual_type": "parameter",
     "source_file": "L2100車床參數警報手冊.pdf",
     "section": "4.6.1. JPS使用外部Index Latch功能設定",
     "codes": [],
-    "keywords": [
-      "4.6.1. JPS使用外部Index Latch功能設定"
-    ],
     "start_page": 252,
     "end_page": 253
   },
   {
+    "manual_type": "parameter",
     "source_file": "L2100車床參數警報手冊.pdf",
-    "section": "5. 全域變數",
+    "section": "5.  全域變數",
     "codes": [],
-    "keywords": [
-      "5. 全域變數"
-    ],
     "start_page": 254,
     "end_page": 294
   },
   {
+    "manual_type": "parameter",
     "source_file": "L2100車床參數警報手冊.pdf",
     "section": "6. 製造者選項",
     "codes": [],
-    "keywords": [
-      "6. 製造者選項"
-    ],
     "start_page": 295,
     "end_page": 303
   },
   {
+    "manual_type": "parameter",
     "source_file": "L2100車床參數警報手冊.pdf",
     "section": "7. 操作者選項",
     "codes": [],
-    "keywords": [
-      "7. 操作者選項"
-    ],
     "start_page": 304,
     "end_page": 309
   },
   {
+    "manual_type": "parameter",
     "source_file": "L2100車床參數警報手冊.pdf",
     "section": "8. 系統警報訊息",
     "codes": [],
-    "keywords": [
-      "8. 系統警報訊息"
-    ],
     "start_page": 310,
     "end_page": 311
   },
   {
+    "manual_type": "parameter",
     "source_file": "L2100車床參數警報手冊.pdf",
     "section": "8.1. HMI人機介面警報",
     "codes": [],
-    "keywords": [
-      "8.1. HMI人機介面警報"
-    ],
     "start_page": 312,
     "end_page": 313
   },
   {
+    "manual_type": "parameter",
     "source_file": "L2100車床參數警報手冊.pdf",
     "section": "8.2. INT解譯警報",
     "codes": [],
-    "keywords": [
-      "8.2. INT解譯警報"
-    ],
     "start_page": 314,
     "end_page": 331
   },
   {
+    "manual_type": "parameter",
     "source_file": "L2100車床參數警報手冊.pdf",
-    "section": "8.3. MOT運動模組警報",
+    "section": "8.3.  MOT運動模組警報",
     "codes": [],
-    "keywords": [
-      "8.3. MOT運動模組警報"
-    ],
     "start_page": 332,
     "end_page": 371
   },
   {
+    "manual_type": "parameter",
     "source_file": "L2100車床參數警報手冊.pdf",
     "section": "8.4. OP 操作相關警報",
     "codes": [],
-    "keywords": [
-      "8.4. OP 操作相關警報"
-    ],
     "start_page": 372,
     "end_page": 375
   },
   {
+    "manual_type": "parameter",
     "source_file": "L2100車床參數警報手冊.pdf",
     "section": "8.5. RTEX通訊型Panasonic A5N警報",
     "codes": [],
-    "keywords": [
-      "8.5. RTEX通訊型Panasonic A5N警報"
-    ],
     "start_page": 376,
     "end_page": 426
   },
   {
+    "manual_type": "parameter",
     "source_file": "L2100車床參數警報手冊.pdf",
-    "section": "8.6. EtherCAT通訊相關警報",
+    "section": "8.6.  EtherCAT通訊相關警報",
     "codes": [
       "EtherCAT"
-    ],
-    "keywords": [
-      "8.6. EtherCAT通訊相關警報"
     ],
     "start_page": 427,
     "end_page": 429
   },
   {
+    "manual_type": "parameter",
     "source_file": "L2100車床參數警報手冊.pdf",
     "section": "8.7. EtherCAT通訊型Panasonic A5B警報",
     "codes": [
       "EtherCAT"
     ],
-    "keywords": [
-      "8.7. EtherCAT通訊型Panasonic A5B警報"
-    ],
     "start_page": 430,
     "end_page": 450
   },
   {
+    "manual_type": "parameter",
     "source_file": "L2100車床參數警報手冊.pdf",
     "section": "8.8. EtherCAT通訊型Delta ASDA-A2-E警報",
     "codes": [
       "EtherCAT"
     ],
-    "keywords": [
-      "8.8. EtherCAT通訊型Delta ASDA-A2-E警報"
-    ],
     "start_page": 451,
     "end_page": 463
   },
   {
+    "manual_type": "parameter",
     "source_file": "L2100車床參數警報手冊.pdf",
     "section": "8.9. EtherCAT通訊型JPS警報",
     "codes": [
       "EtherCAT"
     ],
-    "keywords": [
-      "8.9. EtherCAT通訊型JPS警報"
-    ],
     "start_page": 464,
     "end_page": 465
   },
   {
+    "manual_type": "parameter",
     "source_file": "L2100車床參數警報手冊.pdf",
     "section": "8.10. EtherCAT通訊型TDE警報",
     "codes": [
       "EtherCAT"
     ],
-    "keywords": [
-      "8.10. EtherCAT通訊型TDE警報"
-    ],
     "start_page": 466,
     "end_page": 477
   },
   {
+    "manual_type": "parameter",
     "source_file": "L2100車床參數警報手冊.pdf",
     "section": "8.11. EtherCAT通訊型HIWIN D2警報",
     "codes": [
       "EtherCAT"
-    ],
-    "keywords": [
-      "8.11. EtherCAT通訊型HIWIN D2警報"
     ],
     "start_page": 478,
     "end_page": 478
