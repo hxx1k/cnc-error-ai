@@ -196,7 +196,7 @@ def search_sections(query: str):
 
     return [x[1] for x in matched[:1]]
 
-def search_page_images(query: str, results: List[dict], min_score: int = 75):
+def search_page_images(query: str, results: List[dict], min_score: int = 50):
 
     keys = extract_keywords(query)
 
@@ -471,12 +471,20 @@ def search(req: QueryRequest):
             }
 
         # 圖片搜尋（新版 page_index scoring）
-        images = search_page_images(
-            query=query,
-            results=results,
-            min_score=75
-        )
+images = search_page_images(
+    query=query,
+    results=results,
+    min_score=50
+)
 
+if not images:
+    sections = search_sections(query)
+
+    if sections:
+        images = get_section_page_images(
+            sections[0],
+            results
+        )
         # Gemini 回答
         try:
             answer = generate_answer(query, results)
