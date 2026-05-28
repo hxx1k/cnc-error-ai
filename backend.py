@@ -197,13 +197,16 @@ def get_section_page_images(section, results=None):
     start_page = int(section.get("start_page", 0))
     end_page = int(section.get("end_page", start_page))
 
+    # 允許章節多延伸 1 頁，解決 G02 第10頁、G32 第34頁這種跨頁問題
+    max_page = end_page + 1
+
     pages = set()
 
     # 章節範圍頁
     for page in range(start_page, end_page + 1):
         pages.add(page)
 
-    # RAG 命中頁：只收同一本手冊，而且不能在章節前面
+    # RAG 命中頁：只能在章節範圍到下一頁內
     if results:
         for r in results:
             if r.get("source_file") != source_file:
@@ -214,10 +217,8 @@ def get_section_page_images(section, results=None):
             except:
                 continue
 
-            if page < start_page:
-                continue
-
-            pages.add(page)
+            if start_page <= page <= max_page:
+                pages.add(page)
 
     for page in sorted(pages):
         path = f"/page_images/{manual_type}/page_{page:04d}.png"
