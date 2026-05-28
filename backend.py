@@ -196,16 +196,39 @@ def search_sections(query: str):
     return [x[1] for x in matched[:1]]
 
 
-def get_section_page_images(section):
+def get_section_page_images(section, results=None):
 
     images = []
+    used_pages = set()
 
     manual_type = section.get("manual_type", "")
     source_file = section.get("source_file", "")
     start_page = int(section.get("start_page", 0))
     end_page = int(section.get("end_page", start_page))
 
+    pages = []
+
+    # 章節頁面
     for page in range(start_page, end_page + 1):
+        pages.append(page)
+
+    # RAG 命中的頁面也加入，避免像 G02 第10頁漏掉
+    if results:
+        for r in results:
+            if r.get("source_file") == source_file:
+                try:
+                    p = int(r.get("page"))
+                    pages.append(p)
+                except:
+                    pass
+
+    pages = sorted(set(pages))
+
+    for page in pages:
+        if page in used_pages:
+            continue
+
+        used_pages.add(page)
 
         path = f"/page_images/{manual_type}/page_{page:04d}.png"
 
@@ -337,7 +360,10 @@ def search(req: QueryRequest):
         images = []
 
         if sections:
-            images = get_section_page_images(sections[0])
+            images = get_section_page_images(
+            sections[0],
+            results
+            )
 
         try:
             answer = generate_answer(query, results)
