@@ -3,17 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>L2100 CNC Manual AI</title>
 
 <style>
-
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
-
+*{margin:0;padding:0;box-sizing:border-box}
 body{
     font-family:"Microsoft JhengHei",sans-serif;
     background:#0f172a;
@@ -21,14 +14,7 @@ body{
     height:100vh;
     overflow:hidden;
 }
-
-.app{
-    display:flex;
-    height:100vh;
-}
-
-/* 左側歷史 */
-
+.app{display:flex;height:100vh}
 .sidebar{
     width:320px;
     background:#111827;
@@ -36,82 +22,39 @@ body{
     display:flex;
     flex-direction:column;
 }
-
 .sidebar-header{
     padding:20px;
     font-size:22px;
     font-weight:bold;
     border-bottom:1px solid #1f2937;
 }
-
-.history-list{
-    flex:1;
-    overflow-y:auto;
-    padding:10px;
-}
-
+.history-list{flex:1;overflow-y:auto;padding:10px}
 .history-item{
     background:#1e293b;
     border-radius:12px;
     padding:14px;
     margin-bottom:10px;
     cursor:pointer;
-    transition:0.2s;
     border:1px solid transparent;
 }
+.history-item:hover{border:1px solid #3b82f6;background:#263548}
+.history-question{font-size:15px;font-weight:bold;margin-bottom:8px}
+.history-time{font-size:12px;color:#94a3b8}
 
-.history-item:hover{
-    border:1px solid #3b82f6;
-    background:#263548;
-}
-
-.history-question{
-    font-size:15px;
-    font-weight:bold;
-    margin-bottom:8px;
-}
-
-.history-time{
-    font-size:12px;
-    color:#94a3b8;
-}
-
-/* 右側 */
-
-.main{
-    flex:1;
-    display:flex;
-    flex-direction:column;
-    overflow:hidden;
-}
-
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
 .header{
     padding:20px;
     border-bottom:1px solid #1f2937;
     background:#111827;
 }
-
-.header h1{
-    font-size:28px;
-}
-
-.chat-container{
-    flex:1;
-    overflow-y:auto;
-    padding:30px;
-}
-
+.header h1{font-size:28px}
+.chat-container{flex:1;overflow-y:auto;padding:30px}
 .input-area{
     padding:20px;
     border-top:1px solid #1f2937;
     background:#111827;
 }
-
-.input-box{
-    display:flex;
-    gap:12px;
-}
-
+.input-box{display:flex;gap:12px}
 textarea{
     flex:1;
     resize:none;
@@ -124,21 +67,16 @@ textarea{
     font-size:16px;
     height:70px;
 }
-
 button{
     background:#2563eb;
     color:white;
     border:none;
-    padding:0 30px;
+    padding:12px 24px;
     border-radius:14px;
     font-size:16px;
     cursor:pointer;
-    transition:0.2s;
 }
-
-button:hover{
-    background:#1d4ed8;
-}
+button:hover{background:#1d4ed8}
 
 .card{
     background:#111827;
@@ -147,52 +85,58 @@ button:hover{
     padding:25px;
     margin-bottom:24px;
 }
-
 .question{
     font-size:24px;
     font-weight:bold;
     margin-bottom:20px;
     color:#60a5fa;
 }
-
 .answer{
     white-space:pre-wrap;
     line-height:1.8;
     font-size:16px;
 }
-
 .image-grid{
     display:grid;
     grid-template-columns:repeat(auto-fill,minmax(350px,1fr));
     gap:20px;
     margin-top:30px;
 }
-
 .image-card{
     background:#1e293b;
     border-radius:16px;
     overflow:hidden;
     border:1px solid #334155;
 }
-
 .image-meta{
     padding:12px;
     font-size:14px;
     background:#0f172a;
 }
-
-.result-image{
-    width:100%;
-    display:block;
-}
-
+.result-image{width:100%;display:block}
 .empty{
     color:#94a3b8;
     text-align:center;
-    margin-top:120px;
+    margin-top:80px;
     font-size:18px;
 }
-
+.empty h2{
+    font-size:34px;
+    margin-bottom:20px;
+    color:#60a5fa;
+}
+.empty p{
+    margin-bottom:30px;
+    color:#cbd5e1;
+    line-height:1.8;
+}
+.quick-buttons{
+    margin-top:30px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:14px;
+    justify-content:center;
+}
 </style>
 </head>
 
@@ -200,18 +144,11 @@ button:hover{
 
 <div class="app">
 
-    <!-- 左邊歷史 -->
     <div class="sidebar">
-
-        <div class="sidebar-header">
-            CNC 手冊 AI
-        </div>
-
+        <div class="sidebar-header">CNC 手冊 AI</div>
         <div class="history-list" id="historyList"></div>
-
     </div>
 
-    <!-- 右邊 -->
     <div class="main">
 
         <div class="header">
@@ -221,26 +158,32 @@ button:hover{
         <div class="chat-container" id="chatContainer">
 
             <div class="empty">
-                請輸入問題開始查詢
+                <h2>L2100 CNC 車床 AI 助理</h2>
+
+                <p>
+                    本系統可查詢：<br><br>
+                    ・L2100 車床程式說明手冊<br>
+                    ・L2100 車床中文維護手冊<br>
+                    ・L2100 車床參數警報手冊<br><br>
+                    支援 G碼、M碼、參數、警報、EtherCAT、接線、維護流程、加工指令等查詢。
+                </p>
+
+                <div class="quick-buttons">
+                    <button onclick="quickAsk('G02 是什麼？')">G02 是什麼？</button>
+                    <button onclick="quickAsk('G32 螺紋切削')">G32 螺紋切削</button>
+                    <button onclick="quickAsk('M03 主軸正轉')">M03 主軸正轉</button>
+                    <button onclick="quickAsk('EtherCAT 警報')">EtherCAT 警報</button>
+                    <button onclick="quickAsk('參數0001')">參數0001</button>
+                </div>
             </div>
 
         </div>
 
         <div class="input-area">
-
             <div class="input-box">
-
-                <textarea
-                    id="queryInput"
-                    placeholder="例如：G02 是什麼？"
-                ></textarea>
-
-                <button onclick="search()">
-                    查詢
-                </button>
-
+                <textarea id="queryInput" placeholder="例如：G02 是什麼？"></textarea>
+                <button onclick="search()">查詢</button>
             </div>
-
         </div>
 
     </div>
@@ -248,145 +191,82 @@ button:hover{
 </div>
 
 <script>
-
 const API_URL = "/search"
 
-let historyData = JSON.parse(
-    localStorage.getItem("cnc_history") || "[]"
-)
+let historyData = JSON.parse(localStorage.getItem("cnc_history") || "[]")
 
 function saveHistory(){
-
-    localStorage.setItem(
-        "cnc_history",
-        JSON.stringify(historyData)
-    )
-
+    localStorage.setItem("cnc_history",JSON.stringify(historyData))
 }
 
 function renderHistory(){
-
-    const historyList =
-        document.getElementById("historyList")
-
+    const historyList = document.getElementById("historyList")
     historyList.innerHTML = ""
 
     historyData.forEach((item,index)=>{
-
         historyList.innerHTML += `
-            <div class="history-item"
-                onclick="loadHistory(${index})">
-
-                <div class="history-question">
-                    ${item.query}
-                </div>
-
-                <div class="history-time">
-                    ${item.time}
-                </div>
-
+            <div class="history-item" onclick="loadHistory(${index})">
+                <div class="history-question">${item.query}</div>
+                <div class="history-time">${item.time}</div>
             </div>
         `
-
     })
-
 }
 
 function loadHistory(index){
-
-    const data = historyData[index]
-
-    renderResult(data)
-
+    renderResult(historyData[index])
 }
 
 function renderResult(data){
-
-    const chat =
-        document.getElementById("chatContainer")
+    const chat = document.getElementById("chatContainer")
 
     let html = `
         <div class="card">
-
-            <div class="question">
-                ${data.query}
-            </div>
-
-            <div class="answer">
-                ${data.answer}
-            </div>
+            <div class="question">${data.query}</div>
+            <div class="answer">${data.answer}</div>
     `
 
     if(data.images && data.images.length > 0){
-
-        html += `
-            <div class="image-grid">
-        `
+        html += `<div class="image-grid">`
 
         data.images.forEach(img=>{
-
             html += `
                 <div class="image-card">
-
                     <div class="image-meta">
-
-                        圖片來源：
-                        ${img.source_file || "未知手冊"}
-
-                        ｜ 第 ${img.page} 頁
-
-                        ${img.section
-                            ? "<br>章節：" + img.section
-                            : ""
-                        }
-
+                        圖片來源：${img.source_file || "未知手冊"}
+                        ｜ 第 ${img.page || "未知"} 頁
+                        ${img.section ? "<br>章節：" + img.section : ""}
                     </div>
-
-                    <img
-                        src="${img.url}"
-                        class="result-image"
-                    >
-
+                    <img src="${img.url}" class="result-image">
                 </div>
             `
-
         })
 
         html += `</div>`
-
     }
 
     html += `</div>`
-
     chat.innerHTML = html
+}
 
+function quickAsk(q){
+    document.getElementById("queryInput").value = q
+    search()
 }
 
 async function search(){
-
-    const input =
-        document.getElementById("queryInput")
-
+    const input = document.getElementById("queryInput")
     const query = input.value.trim()
 
     if(!query) return
 
-    const chat =
-        document.getElementById("chatContainer")
-
-    chat.innerHTML = `
-        <div class="empty">
-            搜尋中...
-        </div>
-    `
+    const chat = document.getElementById("chatContainer")
+    chat.innerHTML = `<div class="empty">搜尋中...</div>`
 
     try{
-
         const response = await fetch(API_URL,{
             method:"POST",
-            headers:{
-                "Content-Type":"application/json"
-            },
+            headers:{"Content-Type":"application/json"},
             body:JSON.stringify({
                 query:query,
                 use_ollama:true
@@ -394,32 +274,21 @@ async function search(){
         })
 
         const data = await response.json()
-
-        data.time =
-            new Date().toLocaleString()
+        data.time = new Date().toLocaleString()
 
         historyData.unshift(data)
-
         saveHistory()
-
         renderHistory()
-
         renderResult(data)
 
+        input.value = ""
+
     }catch(err){
-
-        chat.innerHTML = `
-            <div class="empty">
-                搜尋失敗：${err}
-            </div>
-        `
-
+        chat.innerHTML = `<div class="empty">搜尋失敗：${err}</div>`
     }
-
 }
 
 renderHistory()
-
 </script>
 
 </body>
