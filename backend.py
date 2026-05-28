@@ -198,37 +198,50 @@ def search_sections(query: str):
 
 def get_section_page_images(section, results=None):
 
+    MIN_IMAGE_SCORE = 75
+
     images = []
-    used_pages = set()
+    scored_pages = {}
 
     manual_type = section.get("manual_type", "")
     source_file = section.get("source_file", "")
+    section_name = section.get("section", "")
+
     start_page = int(section.get("start_page", 0))
     end_page = int(section.get("end_page", start_page))
 
-    pages = []
-
-    # 章節頁面
+    # 先把章節範圍內頁面放進來，但分數比較低
     for page in range(start_page, end_page + 1):
-        pages.append(page)
+        scored_pages[page] = scored_pages.get(page, 0) + 40
 
-    # RAG 命中的頁面也加入，避免像 G02 第10頁漏掉
+    # RAG 有命中的頁面加高分
     if results:
         for r in results:
             if r.get("source_file") == source_file:
                 try:
-                    p = int(r.get("page"))
-                    pages.append(p)
+                    page = int(r.get("page"))
                 except:
-                    pass
+                    continue
 
-    pages = sorted(set(pages))
+                text = normalize(
+                    str(r.get("title", "")) + " " +
+                    str(r.get("text", "")) + " " +
+                    " ".join(r.get("codes", []))
+                )
 
-    for page in pages:
-        if page in used_pages:
+                score = 50
+
+                for key in extract_keywords(section_name):
+                    if key in text:
+                        score += 20
+
+                scored_pages[page] = scored_pages.get(page, 0) + score
+
+    # 只保留 75 分以上
+    for page, score in sorted(scored_pages.items()):
+
+        if score < MIN_IMAGE_SCORE:
             continue
-
-        used_pages.add(page)
 
         path = f"/page_images/{manual_type}/page_{page:04d}.png"
 
@@ -236,7 +249,8 @@ def get_section_page_images(section, results=None):
             "url": BASE_URL + quote(path, safe="/:"),
             "page": page,
             "source_file": source_file,
-            "section": section.get("section", "")
+            "section": section_name,
+            "score": score
         })
 
     return images
