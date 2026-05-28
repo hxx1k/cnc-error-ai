@@ -52,6 +52,7 @@ def load_json(path, default):
 
 
 SECTION_MAP = load_json("section_map.json", [])
+PAGE_INDEX = load_json("page_index.json", [])
 
 
 qdrant = QdrantClient(
@@ -194,6 +195,105 @@ def search_sections(query: str):
     matched.sort(key=lambda x: x[0], reverse=True)
 
     return [x[1] for x in matched[:1]]
+
+def search_page_images(query: str, results: List[dict], min_score: int = 75):
+
+    keys = extract_keywords(query)
+
+    rag_pages = set()
+    rag_sources = set()
+
+    for r in results:
+        src = r.get("source_file", "")
+        page = r.get("page", "")
+
+        try:
+            page = int(page)
+        except:
+            continue
+
+        rag_pages.add((src, page))
+        rag_sources.add(src)
+
+    images = []
+
+    for p in PAGE_INDEX:
+
+        source_file = p.get("source_file", "")
+        manual_type = p.get("manual_type", "")
+        page = p.get("page", 0)
+        text = normalize(p.get("text", ""))
+
+        try:
+            page = int(page)
+        except:
+            continue
+
+        # 只看 RAG 有命中的手冊，避免三本混在一起
+        if rag_sources and source_file not in rag_sources:
+            continue
+
+        score = 0
+        reason = []
+
+        # 查詢關鍵字命中
+        for key in keys:
+            if key in text:
+                score += 50
+                reason.append(f"命中關鍵字：{key}")
+
+        # RAG 命中頁
+        if (source_file, page) in rag_pages:
+            score += 50
+            reason.append("RAG 命中頁")
+
+        # 常見技術輔助詞加分
+        bonus_words = [
+            "圓弧", "插值", "插補", "I", "J", "K", "R",
+            "範例", "注意事項", "指令格式", "動作說明",
+            "警報", "參數", "設定", "接線", "架構"
+        ]
+
+        for w in bonus_words:
+            if normalize(w) in text:
+                score += 5
+
+        # 目錄 / 一覽表扣分
+        if p.get("is_toc"):
+            score -= 200
+            reason.append("扣分：目錄頁")
+
+        if p.get("is_overview"):
+            score -= 150
+            reason.append("扣分：一覽表")
+
+        if "目錄" in text:
+            score -= 200
+            reason.append("扣分：含目錄")
+
+        if "一覽表" in text:
+            score -= 150
+            reason.append("扣分：含一覽表")
+
+        if score < min_score:
+            continue
+
+        image_url = p.get("image_url", "")
+
+        if not image_url:
+            continue
+
+        images.append({
+            "url": BASE_URL + quote(image_url, safe="/:"),
+            "page": page,
+            "source_file": source_file,
+            "score": score,
+            "reason": reason
+        })
+
+    images.sort(key=lambda x: (-x["score"], x["page"]))
+
+    return images
 
 
 def get_section_page_images(section, results=None):
@@ -358,6 +458,7 @@ def search(req: QueryRequest):
 
     try:
 
+        # 文字搜尋
         results = keyword_search(query, limit=5)
 
         if not results:
@@ -369,20 +470,22 @@ def search(req: QueryRequest):
                 "images": []
             }
 
-        sections = search_sections(query)
+        # 圖片搜尋（新版 page_index scoring）
+        images = search_page_images(
+            query=query,
+            results=results,
+            min_score=75
+        )
 
-        images = []
-
-        if sections:
-            images = get_section_page_images(
-            sections[0],
-            results
-            )
-
+        # Gemini 回答
         try:
             answer = generate_answer(query, results)
+
         except Exception as e:
-            answer = f"生成答案失敗：{e}"
+
+            print("Gemini 失敗：", e)
+
+            answer = build_context(results)
 
         return {
             "query": query,
@@ -393,6 +496,8 @@ def search(req: QueryRequest):
         }
 
     except Exception as e:
+
+        print("Search Error:", e)
 
         return {
             "query": query,
