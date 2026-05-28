@@ -24,7 +24,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 靜態檔案
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.mount("/page_images", StaticFiles(directory="page_images"), name="page_images")
 
@@ -52,7 +51,6 @@ def load_json(path, default):
 
 
 SECTION_MAP = load_json("section_map.json", [])
-PAGE_INDEX = load_json("page_index.json", [])
 
 
 qdrant = QdrantClient(
@@ -108,14 +106,12 @@ def extract_keywords(query: str):
 
 
 def keyword_search(query: str, limit: int = 5):
-
     keys = extract_keywords(query)
 
     results = []
     offset = None
 
     for _ in range(50):
-
         points, offset = qdrant.scroll(
             collection_name=COLLECTION_NAME,
             limit=100,
@@ -125,7 +121,6 @@ def keyword_search(query: str, limit: int = 5):
         )
 
         for p in points:
-
             payload = p.payload or {}
 
             text = normalize(
@@ -153,7 +148,6 @@ def keyword_search(query: str, limit: int = 5):
     seen = set()
 
     for r in results:
-
         uid = (
             str(r.get("source_file", "")),
             str(r.get("page", "")),
@@ -171,13 +165,10 @@ def keyword_search(query: str, limit: int = 5):
 
 
 def search_sections(query: str):
-
     keys = extract_keywords(query)
-
     matched = []
 
     for sec in SECTION_MAP:
-
         sec_text = normalize(
             str(sec.get("section", "")) + " " +
             " ".join(sec.get("codes", []))
@@ -193,115 +184,11 @@ def search_sections(query: str):
             matched.append((score, sec))
 
     matched.sort(key=lambda x: x[0], reverse=True)
-
     return [x[1] for x in matched[:1]]
-
-def search_page_images(query: str, results: List[dict], min_score: int = 50):
-
-    keys = extract_keywords(query)
-
-    rag_pages = set()
-    rag_sources = set()
-
-    for r in results:
-        src = r.get("source_file", "")
-        page = r.get("page", "")
-
-        try:
-            page = int(page)
-        except:
-            continue
-
-        rag_pages.add((src, page))
-        rag_sources.add(src)
-
-    images = []
-
-    for p in PAGE_INDEX:
-
-        source_file = p.get("source_file", "")
-        manual_type = p.get("manual_type", "")
-        page = p.get("page", 0)
-        text = normalize(p.get("text", ""))
-
-        try:
-            page = int(page)
-        except:
-            continue
-
-        # 只看 RAG 有命中的手冊，避免三本混在一起
-        if rag_sources and source_file not in rag_sources:
-            continue
-
-        score = 0
-        reason = []
-
-        # 查詢關鍵字命中
-        for key in keys:
-            if key in text:
-                score += 50
-                reason.append(f"命中關鍵字：{key}")
-
-        # RAG 命中頁
-        if (source_file, page) in rag_pages:
-            score += 50
-            reason.append("RAG 命中頁")
-
-        # 常見技術輔助詞加分
-        bonus_words = [
-            "圓弧", "插值", "插補", "I", "J", "K", "R",
-            "範例", "注意事項", "指令格式", "動作說明",
-            "警報", "參數", "設定", "接線", "架構"
-        ]
-
-        for w in bonus_words:
-            if normalize(w) in text:
-                score += 5
-
-        # 目錄 / 一覽表扣分
-        if p.get("is_toc"):
-            score -= 200
-            reason.append("扣分：目錄頁")
-
-        if p.get("is_overview"):
-            score -= 150
-            reason.append("扣分：一覽表")
-
-        if "目錄" in text:
-            score -= 200
-            reason.append("扣分：含目錄")
-
-        if "一覽表" in text:
-            score -= 150
-            reason.append("扣分：含一覽表")
-
-        if score < min_score:
-            continue
-
-        image_url = p.get("image_url", "")
-
-        if not image_url:
-            continue
-
-        images.append({
-            "url": BASE_URL + quote(image_url, safe="/:"),
-            "page": page,
-            "source_file": source_file,
-            "score": score,
-            "reason": reason
-        })
-
-    images.sort(key=lambda x: (-x["score"], x["page"]))
-
-    return images
 
 
 def get_section_page_images(section, results=None):
-
-    MIN_IMAGE_SCORE = 75
-
     images = []
-    scored_pages = {}
 
     manual_type = section.get("manual_type", "")
     source_file = section.get("source_file", "")
@@ -310,58 +197,45 @@ def get_section_page_images(section, results=None):
     start_page = int(section.get("start_page", 0))
     end_page = int(section.get("end_page", start_page))
 
-    # 先把章節範圍內頁面放進來，但分數比較低
-    for page in range(start_page, end_page + 1):
-        scored_pages[page] = scored_pages.get(page, 0) + 40
+    pages = set()
 
-    # RAG 有命中的頁面加高分
+    # 章節範圍頁
+    for page in range(start_page, end_page + 1):
+        pages.add(page)
+
+    # RAG 命中頁：只收同一本手冊，而且不能在章節前面
     if results:
         for r in results:
-            if r.get("source_file") == source_file:
-                try:
-                    page = int(r.get("page"))
-                except:
-                    continue
+            if r.get("source_file") != source_file:
+                continue
 
-                text = normalize(
-                    str(r.get("title", "")) + " " +
-                    str(r.get("text", "")) + " " +
-                    " ".join(r.get("codes", []))
-                )
+            try:
+                page = int(r.get("page"))
+            except:
+                continue
 
-                score = 50
+            if page < start_page:
+                continue
 
-                for key in extract_keywords(section_name):
-                    if key in text:
-                        score += 20
+            pages.add(page)
 
-                scored_pages[page] = scored_pages.get(page, 0) + score
-
-    # 只保留 75 分以上
-    for page, score in sorted(scored_pages.items()):
-
-        if score < MIN_IMAGE_SCORE:
-            continue
-
+    for page in sorted(pages):
         path = f"/page_images/{manual_type}/page_{page:04d}.png"
 
         images.append({
             "url": BASE_URL + quote(path, safe="/:"),
             "page": page,
             "source_file": source_file,
-            "section": section_name,
-            "score": score
+            "section": section_name
         })
 
     return images
 
 
 def build_context(results: List[dict]):
-
     context = ""
 
     for i, r in enumerate(results, 1):
-
         context += f"""
 【資料 {i}】
 
@@ -382,10 +256,8 @@ def build_context(results: List[dict]):
 
 
 def generate_answer(query: str, results: List[dict]):
-
     context = build_context(results)
 
-    # 沒有 Gemini
     if not gemini_client:
         return context[:4000]
 
@@ -413,22 +285,18 @@ def generate_answer(query: str, results: List[dict]):
 """
 
     try:
-
         response = gemini_client.models.generate_content(
             model="gemini-2.5-flash",
             contents=prompt
         )
-
         return response.text
 
     except Exception as e:
-
         print("Gemini 失敗：", e)
 
         fallback = "【Gemini 額度不足，改用手冊原文模式】\n\n"
 
         for i, r in enumerate(results, 1):
-
             fallback += f"""
 ========================
 資料 {i}
@@ -453,12 +321,9 @@ def generate_answer(query: str, results: List[dict]):
 
 @app.post("/search")
 def search(req: QueryRequest):
-
     query = req.query.strip()
 
     try:
-
-        # RAG 搜尋
         results = keyword_search(query, limit=5)
 
         if not results:
@@ -470,34 +335,17 @@ def search(req: QueryRequest):
                 "images": []
             }
 
-        # 新版圖片搜尋
-        images = search_page_images(
-            query=query,
-            results=results,
-            min_score=50
-        )
+        sections = search_sections(query)
 
-        # 如果新版沒抓到 → fallback
-        if not images:
+        images = []
 
-            sections = search_sections(query)
+        if sections:
+            images = get_section_page_images(sections[0], results)
 
-            if sections:
-
-                images = get_section_page_images(
-                    sections[0],
-                    results
-                )
-
-        # Gemini
         try:
-
             answer = generate_answer(query, results)
-
         except Exception as e:
-
             print("Gemini 失敗：", e)
-
             answer = build_context(results)
 
         return {
@@ -509,7 +357,6 @@ def search(req: QueryRequest):
         }
 
     except Exception as e:
-
         print("Search Error:", e)
 
         return {
