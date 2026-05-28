@@ -458,7 +458,7 @@ def search(req: QueryRequest):
 
     try:
 
-        # 文字搜尋
+        # RAG 搜尋
         results = keyword_search(query, limit=5)
 
         if not results:
@@ -470,23 +470,28 @@ def search(req: QueryRequest):
                 "images": []
             }
 
-        # 圖片搜尋（新版 page_index scoring）
-images = search_page_images(
-    query=query,
-    results=results,
-    min_score=50
-)
-
-if not images:
-    sections = search_sections(query)
-
-    if sections:
-        images = get_section_page_images(
-            sections[0],
-            results
+        # 新版圖片搜尋
+        images = search_page_images(
+            query=query,
+            results=results,
+            min_score=50
         )
-        # Gemini 回答
+
+        # 如果新版沒抓到 → fallback
+        if not images:
+
+            sections = search_sections(query)
+
+            if sections:
+
+                images = get_section_page_images(
+                    sections[0],
+                    results
+                )
+
+        # Gemini
         try:
+
             answer = generate_answer(query, results)
 
         except Exception as e:
