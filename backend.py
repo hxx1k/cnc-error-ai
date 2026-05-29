@@ -1,6 +1,7 @@
 import os
 import json
 import re
+import time
 from typing import List
 from urllib.parse import quote
 
@@ -38,6 +39,7 @@ BASE_URL = "https://cnc-error-ai.onrender.com"
 
 class QueryRequest(BaseModel):
     query: str
+    manual_type: str = "all"
     use_ollama: bool = True
 
 
@@ -105,7 +107,11 @@ def extract_keywords(query: str):
     return out
 
 
-def keyword_search(query: str, limit: int = 5):
+def keyword_search(
+    query: str,
+    manual_type: str = "all",
+    limit: int = 10
+):
     keys = extract_keywords(query)
 
     results = []
@@ -122,6 +128,10 @@ def keyword_search(query: str, limit: int = 5):
 
         for p in points:
             payload = p.payload or {}
+            if manual_type != "all":
+
+                if payload.get("manual_type") != manual_type:
+                    continue
 
             text = normalize(
                 str(payload.get("title", "")) + " " +
@@ -197,16 +207,12 @@ def get_section_page_images(section, results=None):
     start_page = int(section.get("start_page", 0))
     end_page = int(section.get("end_page", start_page))
 
-    # 允許章節多延伸 1 頁，解決 G02 第10頁、G32 第34頁這種跨頁問題
     max_page = end_page + 1
-
     pages = set()
 
-    # 章節範圍頁
     for page in range(start_page, end_page + 1):
         pages.add(page)
 
-    # RAG 命中頁：只能在章節範圍到下一頁內
     if results:
         for r in results:
             if r.get("source_file") != source_file:
@@ -254,6 +260,27 @@ def build_context(results: List[dict]):
 """
 
     return context
+
+
+def build_sources(results: List[dict]):
+    sources = []
+    seen = set()
+
+    for r in results:
+        source_file = r.get("source_file", "")
+        page = r.get("page", "")
+
+        key = (source_file, str(page))
+
+        if source_file and page and key not in seen:
+            seen.add(key)
+            sources.append({
+                "source_file": source_file,
+                "page": page,
+                "title": r.get("title", "")
+            })
+
+    return sources
 
 
 def generate_answer(query: str, results: List[dict]):
@@ -322,17 +349,24 @@ def generate_answer(query: str, results: List[dict]):
 
 @app.post("/search")
 def search(req: QueryRequest):
+    start_time = time.time()
     query = req.query.strip()
 
     try:
-        results = keyword_search(query, limit=10)
+        results = keyword_search(
+            query,
+            manual_type=req.manual_type,
+            limit=10
+        )
 
         if not results:
             return {
                 "query": query,
                 "count": 0,
+                "elapsed": round(time.time() - start_time, 2),
                 "answer": "查無相關資料。",
                 "results": [],
+                "sources": [],
                 "images": []
             }
 
@@ -349,11 +383,15 @@ def search(req: QueryRequest):
             print("Gemini 失敗：", e)
             answer = build_context(results)
 
+        elapsed = round(time.time() - start_time, 2)
+
         return {
             "query": query,
             "count": len(results),
+            "elapsed": elapsed,
             "answer": answer,
             "results": results,
+            "sources": build_sources(results),
             "images": images
         }
 
@@ -363,7 +401,9 @@ def search(req: QueryRequest):
         return {
             "query": query,
             "count": 0,
+            "elapsed": round(time.time() - start_time, 2),
             "answer": f"後端錯誤：{e}",
             "results": [],
+            "sources": [],
             "images": []
         }

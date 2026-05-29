@@ -20,7 +20,40 @@ body{font-family:"Microsoft JhengHei",system-ui,sans-serif;background:radial-gra
 <body>
 <div class="app">
 <aside class="sidebar"><div class="sidebar-header"><div class="logo-row"><div><div class="logo">⚙️ L2100 CNC AI</div><div class="subtitle">CNC 車床手冊智慧查詢系統</div></div><button class="clear-btn" onclick="clearHistory()" title="清除歷史紀錄">🗑</button></div></div><div class="history-list" id="historyList"></div></aside>
-<main class="main"><header class="header"><h1>⚙️ L2100 CNC AI</h1><div class="header-badges"><span class="badge">RAG 檢索</span><span class="badge">Qdrant</span><span class="badge">Gemini</span><span class="badge">手冊頁面圖片</span></div></header><section class="chat-container" id="chatContainer"></section><footer class="input-area"><div class="input-box"><textarea id="queryInput" placeholder="例如：G02 是什麼？、G32 螺紋切削、M03 主軸正轉、參數0001"></textarea><button class="send-btn" onclick="search()">查詢</button></div></footer></main>
+<main class="main"><header class="header"><h1>⚙️ L2100 CNC AI</h1><div class="header-badges"><span class="badge">RAG 檢索</span><span class="badge">Qdrant</span><span class="badge">Gemini</span><span class="badge">手冊頁面圖片</span></div></header><section class="chat-container" id="chatContainer"></section><footer class="input-area"><div style="margin-bottom:10px;">
+
+<select id="manualSelect"
+    style="
+        width:100%;
+        padding:12px;
+        border-radius:12px;
+        background:#1e293b;
+        color:white;
+        border:1px solid #334155;
+    "
+>
+
+    <option value="all">
+        🔍 三本手冊全部搜尋（不知道選哪本）
+    </option>
+
+    <option value="programming">
+        📘 車床程式說明手冊
+    </option>
+
+    <option value="maintenance">
+        🛠 車床中文維護手冊
+    </option>
+
+    <option value="parameter">
+        ⚠️ 車床參數警報手冊
+    </option>
+
+</select>
+
+</div>
+
+<div class="input-box"><textarea id="queryInput" placeholder="例如：G02 是什麼？、G32 螺紋切削、M03 主軸正轉、參數0001"></textarea><button class="send-btn" onclick="search()">查詢</button></div></footer></main>
 </div>
 <div class="modal" id="imageModal" onclick="closeModal()"><button class="modal-close" onclick="closeModal()">✕</button><img id="modalImg" src=""></div>
 <script>
@@ -43,7 +76,14 @@ function closeModal(){document.getElementById("imageModal").classList.remove("ac
 function typeText(element,text,speed=6){if(typingTimer)clearInterval(typingTimer);element.textContent="";element.classList.add("typing-cursor");let i=0;typingTimer=setInterval(()=>{element.textContent+=text.charAt(i);i++;if(i>=text.length){clearInterval(typingTimer);element.classList.remove("typing-cursor")}},speed)}
 function renderResult(data,animate=true){const chat=document.getElementById("chatContainer");const elapsed=data.elapsed!==undefined?data.elapsed+" 秒":"未提供";const count=data.count!==undefined?data.count:0;let html=`<div class="card"><div class="question">${escapeHTML(data.query||"")}</div><div class="meta-row"><span class="meta-pill">⏱ 搜尋耗時：${escapeHTML(elapsed)}</span><span class="meta-pill">📄 命中資料：${escapeHTML(count)} 筆</span><span class="meta-pill">🧠 RAG + 手冊頁面</span></div><div class="answer" id="answerText"></div>${renderSourceCards(data)}${renderCarousel(data.images||[])}</div>`;chat.innerHTML=html;const answerEl=document.getElementById("answerText");const answer=data.answer||"";if(animate){typeText(answerEl,answer)}else{answerEl.textContent=answer}}
 function quickAsk(q){document.getElementById("queryInput").value=q;search()}
-async function search(){const input=document.getElementById("queryInput");const query=input.value.trim();if(!query)return;const chat=document.getElementById("chatContainer");chat.innerHTML=`<div class="loading"><div class="loader"></div><div style="font-size:20px;font-weight:800;margin-bottom:8px;">搜尋中...</div><div style="color:#94a3b8;">正在檢索 Qdrant、整理 RAG 內容與手冊頁面</div></div>`;try{const response=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({query:query,use_ollama:true})});const data=await response.json();data.time=new Date().toLocaleString();historyData.unshift(data);saveHistory();renderHistory();renderResult(data,true);input.value=""}catch(err){chat.innerHTML=`<div class="loading"><div style="font-size:22px;color:#fecaca;font-weight:900;">搜尋失敗</div><div style="margin-top:12px;color:#cbd5e1;">${escapeHTML(err)}</div></div>`}}
+async function search(){const input=document.getElementById("queryInput");const query=input.value.trim();if(!query)return;const chat=document.getElementById("chatContainer");chat.innerHTML=`<div class="loading"><div class="loader"></div><div style="font-size:20px;font-weight:800;margin-bottom:8px;">搜尋中...</div><div style="color:#94a3b8;">正在檢索 Qdrant、整理 RAG 內容與手冊頁面</div></div>`;try{const response=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
+    query:query,
+    manual_type:
+        document.getElementById(
+            "manualSelect"
+        ).value,
+    use_ollama:true
+})});const data=await response.json();data.time=new Date().toLocaleString();historyData.unshift(data);saveHistory();renderHistory();renderResult(data,true);input.value=""}catch(err){chat.innerHTML=`<div class="loading"><div style="font-size:22px;color:#fecaca;font-weight:900;">搜尋失敗</div><div style="margin-top:12px;color:#cbd5e1;">${escapeHTML(err)}</div></div>`}}
 document.getElementById("queryInput").addEventListener("keydown",function(e){if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();search()}});
 renderHistory();if(historyData.length>0){renderResult(historyData[0],false)}else{document.getElementById("chatContainer").innerHTML=landingHTML()}
 </script>
