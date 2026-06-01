@@ -40,7 +40,7 @@ app.mount("/page_images", StaticFiles(directory="page_images"), name="page_image
 
 QDRANT_URL = os.getenv("QDRANT_URL")
 QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
 
 COLLECTION_NAME = "l2100_manuals"
 BASE_URL = "https://cnc-error-ai.onrender.com"
@@ -72,7 +72,7 @@ qdrant = QdrantClient(
     check_compatibility=False
 )
 
-gemini_client = genai.Client(api_key=GEMINI_API_KEY) if GEMINI_API_KEY else None
+
 
 
 @app.get("/")
@@ -295,7 +295,7 @@ def build_sources(results: List[dict]):
 def generate_answer(query: str, results: List[dict]):
     context = build_context(results)
 
-    if not gemini_client:
+    if not groq_client:
         return context[:4000]
 
     prompt = f"""
@@ -326,20 +326,19 @@ def generate_answer(query: str, results: List[dict]):
             model="llama-3.3-70b-versatile",
             messages=[
                 {
-                    "role":"user",
-                    "content":prompt
+                    "role": "user",
+                    "content": prompt
                 }
             ],
             temperature=0.2
         )
 
         return response.choices[0].message.content
-        return response.text
 
     except Exception as e:
-        print("Gemini 失敗：", e)
+        print("Groq 失敗：", e)
 
-        fallback = "【Gemini 額度不足，改用手冊原文模式】\n\n"
+        fallback = "【Groq 生成失敗，改用手冊原文模式】\n\n"
 
         for i, r in enumerate(results, 1):
             fallback += f"""
@@ -397,7 +396,7 @@ def search(req: QueryRequest):
         try:
             answer = generate_answer(query, results)
         except Exception as e:
-            print("Gemini 失敗：", e)
+            print("LLM 失敗：", e)
             answer = build_context(results)
 
         elapsed = round(time.time() - start_time, 2)
