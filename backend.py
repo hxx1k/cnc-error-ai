@@ -12,7 +12,16 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
 from qdrant_client import QdrantClient
-from google import genai
+from groq import Groq
+
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+
+groq_client = None
+
+if GROQ_API_KEY:
+    groq_client = Groq(
+        api_key=GROQ_API_KEY
+    )
 
 
 app = FastAPI()
@@ -313,10 +322,18 @@ def generate_answer(query: str, results: List[dict]):
 """
 
     try:
-        response = gemini_client.models.generate_content(
-            model="gemini-1.5-flash",
-            contents=prompt
+        response = groq_client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[
+                {
+                    "role":"user",
+                    "content":prompt
+                }
+            ],
+            temperature=0.2
         )
+
+        return response.choices[0].message.content
         return response.text
 
     except Exception as e:

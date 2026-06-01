@@ -4,3 +4,4 @@ qdrant-client
 requests
 pydantic
 google-genai
+groq
